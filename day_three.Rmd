@@ -1,0 +1,22 @@
+---
+title: "day_three"
+author: "Dillon Niederhut"
+date: "July 27, 2015"
+output: pdf_document
+---
+
+# Introduction
+
+we've been spending a lot of time working with a toy data set
+
+let's look at something more realistic for these exercises
+
+# Summarizing
+
+# Plotting
+
+# Mean testing
+
+# Linear models
+
+# Nonparametric

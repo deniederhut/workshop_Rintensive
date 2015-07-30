@@ -1,0 +1,475 @@
+---
+title: "Day One: R Basics"
+author: "Dillon Niederhut"
+date: "July 27, 2015"
+output: pdf_document
+---
+
+## Introduction
+
+A note to the instructor:
+
+These materials are meant to be guides. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+
+It is a good idea to start off the class by asking folks why they want to learn R. Common responses include:
+
+1. Stata/SPSS/Matlab is too expensive
+2. I saw a pretty graph someone made in R
+3. My field uses analytical packages written for R
+4. I have a deep and burning desire for open and reproducible research
+
+The outline below is designed to give each of these kinds of students the tools they need to get what they want out of R while avoiding common pitfalls. As the instructor, you should draw on your own experience to include further examples and advice, especially for students who do not fall into one of the four categories above.
+
+# Object Oriented Programming
+
+???
+
+## Everything in R is an object
+
+yes, even the functions, just watch
+
+```{r}
+ls
+```
+
+## in R, you store objects with names with the `<-` operator
+
+```{r}
+my.name <- dir
+```
+
+## or
+
+```{r}
+my.name <- dir()
+```
+
+you see those parentheses? that means you are calling that object on other objects
+
+???
+
+# Living in R
+
+## figure out where you are with
+
+like in Unix, in R you are always in a directory
+
+your actions are all relative to that directory
+
+```{r}
+getwd()
+```
+
+## tell R where you would like it to be with
+
+```{r}
+setwd("/Users/dillonniederhut/Dropbox/dlab/R-intensive")
+```
+
+## find out what's in your directory with
+
+```{r}
+dir()
+```
+
+## find out what's in your environment with
+
+in R, you are always in an environment (more on scoping later)
+
+```{r}
+ls()
+```
+
+our environment is currently empty
+
+```{r}
+test <- "I have no idea what I'm doing"
+ls()
+```
+
+## we can clean our environment with
+
+```{r}
+rm(list = ls())
+#exists(test)
+```
+
+## you can pull documentation with `?`
+
+```{r}
+?exists
+```
+
+## and search the help pages with `??`
+
+```{r}
+??exists
+```
+
+## you can get a quick example with
+
+```{r}
+example(exists)
+```
+
+when you kind of remember what you are looking for, try
+
+```{r}
+apropos('lm')
+```
+
+# The power of R is its extensibility
+
+many people write clever software that makes R smarter/better/faster/stronger
+
+## you can install these packages with
+
+```{r}
+#install.packages("Amelia")
+```
+
+## and include them in your environment with
+
+```{r}
+#library(Amelia)
+```
+
+note that when you are installing something, you give R a bunch of letters to search CRAN for, which is why it's in quotes
+
+but when you pull it into your environment, you are calling a function on a variable name, which is why it isn't in quotes
+
+## if you try to call `library` on package that you haven't downloaded, R will fuss at you
+
+```{r}
+#library(supercalifragilisticexpialedocious)
+```
+
+# Math in R
+
+## R can be a calculator
+
+```{r}
+2 + 2
+2 - 2
+2 * 2
+2 %% 2
+2 %/% 2
+2 / 2
+2 ** 2
+2 ** .5
+2 ** -1
+
+```
+
+## R does a few more complicated things
+
+```{r}
+abs(-2)
+pi
+round(pi,digits = 2)
+sign(-2)
+log(2)
+log10(2)
+cos(pi)
+```
+
+## R also handles logic tables and testing
+
+```{r}
+TRUE & TRUE
+TRUE | FALSE
+xor(TRUE,FALSE)
+! FALSE
+1 & 1
+1 & 0
+!0
+```
+
+# Data Types
+
+## R differentiates between different types of data
+
+for example, the boolean and numeric values above
+
+```{r}
+mode(TRUE)
+mode(1)
+```
+
+do you see us using `mode` to get the type of an object? 
+
+this will mean later, when you try to call `mode` to get the most frequently occurring level of a variable, you will be frustrated and sad
+
+don't hate the messenger
+
+you will likely only ever deal with five flavors of data in R, which are stored as 
+
+## three data types
+
+```{r}
+mode(FALSE)
+mode(pi)
+mode("Look mama I'm letters")
+mode(as.Date("2015-07-27"))
+mode(factor(c('undergraduate','graduate','professor','staff')))
+```
+
+we've already dealt a lot with numerics above, so let's talk about
+
+# Boolean data
+
+## logical values pretty much act like numerics
+
+```{r}
+TRUE + TRUE
+2 & 1
+TRUE * TRUE
+2 & -1
+```
+
+this can make it easy to use if/then statements, as `if x` evaluates to `TRUE` if it is anything other than zero
+
+also, any vector (we'll talk about these below) multiplied by a boolean vector has all of its false values set to zero, which can be helpful for summing and average only specific cases
+
+# Character data
+
+## character handling in R is fairly close to character handling in a Unix terminal
+
+```{r}
+my.character <- paste("Hey", "momma", "I'm", "a", "string")
+my.character
+```
+
+## whitespace is the default separater in the paste function, if you don't want this, use `paste0()`
+
+```{r}
+substr(my.character,1,4)
+```
+
+## note here that R is not a zero-indexed language
+
+```{r}
+substr(my.character,1,4) <- "Yes "
+my.character
+```
+
+## you can separate characters with
+
+```{r}
+strsplit(my.character, ' ')
+```
+
+## you can substitute with
+
+```{r}
+gsub('.', 'X', my.character)
+```
+
+R here calls Perl's regex library, where `.` is a special shorthand for "anything"
+
+## to be safe, put it in brackets
+
+```{r}
+gsub('[.]', 'X', my.character)
+gsub('[g]', 'X', my.character)
+```
+
+# Datetime data
+
+## R stores dates internally as the number of days since the epoch (1 Jan 1970)
+
+```{r}
+my.date <- as.Date("2015-07-27")
+my.date + 7
+weekdays(my.date + 7)
+my.date - 365
+weekdays(my.date - 365)
+```
+
+## the epoch is common to (most) Unix systems 
+
+makes it easy to add and subtract days
+
+however, most other languages use seconds since the epoch, not days
+
+these can both cause interoperability issues
+
+# Factor data
+
+## R stores factors internally as integers, and uses the character strings as labels
+
+```{r}
+my.factor <- factor(c('undergraduate','graduate','professor','staff'))
+levels(my.factor)
+```
+
+notice how it sorts those levels alphabetically?
+
+this can cause issues when making plots or trying to display in a particular order - if sort order is critical 
+
+## try giving your factor explicitly numeric levels and character labels
+
+```{r}
+my.factor <- factor(c(1,2,3,4), levels=c('undergraduate','graduate','professor','staff'))
+levels(my.factor)
+```
+
+# Testing and changing data types
+
+## you can test types with `is.type`, e.g.
+
+```{r}
+is.character(my.character)
+is.numeric(my.character)
+```
+
+## you can change datatypes with `as.type`, e.g.
+
+```{r}
+as.character(9)
+as.numeric(my.character)
+```
+
+trying to coerce types can lead to weird behavior
+
+# Data Structures
+
+there are five kinds of data structures in R, but you will probably only ever use three of these
+
+1. vector
+2. list
+3. dataframe
+
+## a vector is an ordered group of the same kind of data, e.g.
+
+```{r}
+my.vector <- c(TRUE, TRUE, FALSE, FALSE, TRUE)
+my.vector
+```
+
+## it doesn't matter what the datatype is, as long as it is all the same
+
+```{r}
+your.vector <- c(1,2,3,4,5)
+my.vector * your.vector
+```
+
+## you will frequently need to create vectors that are sequences of numbers
+
+```{r}
+seq(from=0,to=length(my.vector),by=2)
+```
+
+## R also gives you a shorthand operator for creating sequences where `by=1`
+
+```{r}
+1:length(my.vector)
+```
+
+remember what we said about multiplying logical vectors?
+
+## you can add and multiply vectors, but they need to be the same length
+
+```{r}
+c(1,2,3) * c(TRUE, FALSE)
+```
+
+you will run into this issue a bunch dealing with dataframes and logical vectors
+
+## you can pull elements out of a vector by
+
+```{r}
+my.vector[1]
+your.vector[1:2]
+my.vector[c(1,3)]
+```
+
+## a list is an ordered group of things that are not of the same type
+
+```{r}
+my.list <- list(TRUE, 'two', 3)
+my.list
+```
+
+## you can find out the attributes for and types of data in a list with
+
+```{r}
+str(my.list)
+```
+
+## lists are simple containers, and are not additive or multiplicative
+
+```{r}
+#my.list * list(1, 'two', FALSE)
+```
+
+## subsetting a list with brackets pulls out the element along with its attribute
+
+this will be annoying when you try to pull values out of objects like summary(lm())
+
+```{r}
+my.list[1]
+```
+
+## if you want only the element, use double brackets
+
+```{r}
+my.list[[1]]
+```
+
+# Data frames
+
+## inside R, a dataframe is just a list of equal-length vectors 
+
+much like in SQL where a table is a tuple of attributes
+
+```{r}
+my.data <- data.frame(n = c(1,2,3),c=c('one','two','three'),b=c(TRUE,TRUE,FALSE))
+my.data
+```
+
+see how this is just a list of vectors?
+
+## you can learn some things about data frames
+
+```{r}
+dim(my.data) #this gives you nrow() and ncol()
+colnames(my.data)
+rownames(my.data)
+```
+
+## dataframes have some special operators they share with matrices - subset with brackets
+
+```{r}
+my.data[1:2,3]
+```
+
+## dataframes also have special operators that they inherit from lists
+
+```{r}
+str(my.data)
+```
+
+```{r}
+my.data$b
+my.data$d <- c(my.date, my.date+7, my.date-7)
+my.data
+```
+
+## the dollar operator also does partial matching
+
+```{r}
+my.data$really.long.and.complicated.variable.name <- 999
+my.data$r
+```
+
+since the number of rows in the dataframe (3) is a multiple of the length of the assignment (1), the vectors gets concatenated against itself three times
+
+## you can combine data frames with
+
+```{r}
+rbind(my.data, my.data)
+cbind(my.data, my.data)
+```
+
+you'll learn tomorrow about better ways to merge data, especially heterogeneous data

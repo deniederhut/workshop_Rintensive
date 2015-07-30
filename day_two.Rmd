@@ -1,0 +1,351 @@
+---
+title: 'Day Two: Data Munging'
+author: "Dillon Niederhut & Chris Krogslund"
+date: "July 27, 2015"
+output: pdf_document
+---
+
+## Introduction
+
+Today's class will be essentially be split into two components: CRUD operations in R and TIDY data. For more on tidiness in data, see [Hadley Wickham's paper](www.jstatsoft.org/v59/i10/paper). We will also touch on missingness - for an accessible introduction, you can read [this very old and no longer state-of-the-art paper](http://psycnet.apa.org/journals/met/7/2/147/).
+
+yesterday we saw how to create dataframes in R
+
+```{r}
+my.data <- data.frame(n = c(1, 2, 3),
+                      c=c('one', 'two', 'three'),
+                      b=c(TRUE, TRUE, FALSE),
+                      d=c(as.Date("2015-07-27"), 
+                          as.Date("2015-07-27")+7, 
+                          as.Date("2015-07-27")-7),
+                      really.long.and.complicated.variable.name=999)
+```
+
+remember, you can learn about dataframes with
+
+```{r}
+str(my.data)
+```
+
+in practice, you will only rarely create dataframes by hand, because creating tables in a text editor (or heaven forbid a command line) sucks
+
+# Reading dataframes from file
+
+## why read data from text files? 
+
+they are human-readable and highly interaoperable
+
+```{r}
+read.table("mydata.csv", sep=',', header = TRUE)
+```
+
+## R has convenience wrappers for reading in tables
+
+```{r}
+read.csv("mydata.csv")
+```
+
+note that we are only reading the files by doing this
+
+## the files don't need to be local in most cases
+
+```{r}
+#Looks like the quandl API now requires a key
+link <- "https://www.quandl.com/api/v1/datasets/OPEC/ORB.csv"
+read.csv(link)
+```
+
+## R also has its own kind of data file
+
+```{r}
+load("mydata.csv")
+```
+
+the `load` function does actually put the file into memory, and with the name you originally gave it when you saved it
+
+this is typically a bad thing, and there is currently no easy workaround
+
+## to read in tables from excel, use the `xlsx` package
+
+if you are exporting data from excel, be sure to export datetimes as strings, as excel does not store dates internally the same way Unix does
+
+```{r}
+# need to create excel file
+install.packages("xlsx")
+library(xlsx)
+read.xlsx()
+```
+
+## you can also use R to read in data from proprietary software
+
+```{r}
+# examples of these?
+install.packages("foreign")
+library(foreign)
+read.dta()
+read.spss()
+read.octave()
+```
+
+# scraping from the interwebs
+
+## something about Rcurl
+
+```{r}
+install.packages('RCurl')
+library(RCurl)
+```
+
+## something about html parsing
+
+## someting about RSS feeds
+
+```{r}
+link <- "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+page <- getURL(url = link)
+xmlParse(file = page)
+```
+
+# Connecting to a database
+
+why read from a database? they use less memory, are faster, create their own backups, and offer optimized searching/joining
+
+databases generally come in two flavors, relational and non-relational, which has to do with how important schemas are (and is a bit beyond the scope of an R intro)
+
+two popular relational databases are SQL (or one of its many flavors)
+
+```{r}
+#are there websites that allow you to connect to test servers?
+install.packages("RMySQL")
+library(RMySQL)
+con <- dbConnect(MySQL(),
+         user="", password="",
+         dbname="", host="localhost")
+data <- fetch(dbSendQuery(con, "select * from table"), n=10)
+con.exit(dbDisconnect(con))
+```
+
+and postgres
+
+```{r}
+install.packages("RPostgreSQL")
+library(RPostgreSQL)
+con <- dbConnect(dbDriver("PostgreSQL"),
+                 dbname="", 
+                 host="localhost",
+                 port=1234, 
+                 user="", 
+                 password="")
+data <- dbReadTable(con, c("column1","column2"))
+dbDisconnect(con)
+```
+
+a popular non-relational database is MongoDB
+
+```{r}
+install.packages("rmongodb")
+library(rmongodb)
+con <- mongo.create(host = localhost, 
+                      name = "", 
+                      username = "", 
+                      password = "", 
+                      db = "admin")
+if(mongo.is.connected(con) == TRUE) {
+  data <- mongo.find.all(con, "collection", list("city" = list( "$exists" = "true")))
+}
+mongo.destroy(con)
+```
+
+one quirk about mongo is that your connection always authenticates to the authentication database, not the database you are querying - this db is usually called 'admin'
+
+# Cleaning data
+
+there are two major steps to data cleaning, which we will call 'sanitizing' and 'tidying'
+
+in sanitizing, our goal is to take each variable and force its values to be honest representations of its levels
+
+in tidying, we are arranging our data structurally such that each row contains exactly one observation, and each column contains exactly one kind of data about that observation (this is sometimes expressed in SQL terms as "An attribute must tell something about the key, the whole key, and nothing but the key, so help me Codd")
+
+## exporting data from other software can do weird things to numbers and factors
+
+```{r}
+read.csv()
+str()
+```
+
+## it's usually better to DISABLE R's intuition about data types
+
+unless you already know the data is clean (e.g. you are the one who wrote it)
+
+```{r}
+read.csv(,stringsAsFactors = FALSE)
+str(data)
+```
+
+## then, you can coerce the data into the types they should be
+
+```{r}
+<- as.numeric()
+<- as.factor()
+<- as.Date()
+```
+
+## it's common for hand-coded data to have a signifier for subject-missingness 
+
+(to help differentiate it from your hand-coder forgetting to do something)
+
+```{r}
+$r
+```
+
+## you should replace all of these values in your dataframe with R's missingness signifier, `NA`
+
+```{r}
+[ == 999] <- NA
+```
+
+we'll talk more about missingness later today
+
+## you can replace variable names
+
+and you should, if they are uninformative or long
+
+```{r}
+colnames(my.data)
+colnames(my.data) <- c("numeric","character","boolean","date","missing")
+colnames(my.data)
+```
+
+## now we can look for oddities
+
+## update them by selective assignment
+
+there are easier ways to do this with conditionals and subsetting, which we'll get to in a few minutes
+
+# Subsetting and merging
+
+## an aside on testing
+
+in R, you use double symbols for testing
+
+```{r}
+1 == 2
+1 != 1
+1 >= 1
+```
+
+## tests return boolean vectors
+
+```{r}
+1 >= c(0,1,2)
+```
+
+## recall that boolean vectors need to be the same length or a divisor
+
+if your vectors are not multiples of each other, R will fuss at you
+
+```{r}
+c(1,2) >= c(1,2,3)
+```
+
+the combination of the length requirement, the lack of support in R for proper indexing, and missingness in your data will cause many headaches later on
+
+## subsetting data frames
+
+subsetting your data is where you will use this regularly
+
+```{r}
+my.data$numeric == 2
+my.data[my.data$numeric == 2,]
+```
+
+## boolean variables can act as filters right out of the box
+
+```{r}
+my.data[my.data$b,]
+```
+
+you see the empty space after the comma? that tells R to grab all the columns
+
+## you can also select columns
+
+```{r}
+my.data[,'d']
+```
+
+that empy space **before** the comma? that tells R to grab all the rows
+
+## you can also match elements from a vector
+
+```{r}
+good.things <- c("three", "four", "five")
+my.data[my.data$character %in% good.things, ]
+```
+
+## most subsetting operations on dataframes also return a dataframe
+
+```{r}
+str(my.data[!(my.data$character %in% good.things), ])
+```
+
+## subsets that are a single column return a vector
+
+```{r}
+str(my.data$numeric)
+```
+
+# Missingness
+
+there are many reasons why you might have missing data
+
+*AS LONG AS MISSINGNESS IS NOT CAUSED BY YOUR INDEPENDENT VARIABLE* this is fine
+
+deleting those observations is wasteful, but easy (listwise deletion)
+
+ignoring the individual missing data points is not bad (casewise deletion)
+
+imputing mean values for missing data is possibly the worst thing you can do
+
+imputing via MI + error is currently the best option
+
+## listwise deletion is wasteful
+
+```{r}
+[is.na() == FALSE,]
+```
+
+## casewise deletion is what R does internally
+
+```{r}
+
+```
+
+## remember how we talked about the extensibility of R?
+
+amelia is a package that makes a complicated MI approach stupidly easy
+
+```{r}
+install.packages('Amelia')
+library(Amelia)
+```
+
+## for it to work you need low missingness and large N
+
+```{r}
+
+```
+
+## if you give it a tiny dataset, it will fuss at you
+
+```{r}
+
+```
+
+# Reshaping
+
+```{r}
+install.packages('reshape2')
+install.packages('plyr')
+library(reshape2)
+library(plyr)
+```
