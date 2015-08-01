@@ -473,3 +473,9 @@ cbind(my.data, my.data)
 ```
 
 you'll learn tomorrow about better ways to merge data, especially heterogeneous data
+
+# Acknowledgements
+
+## Materials taken from:
+
+[Hadley Wickham](http://adv-r.had.co.nz/)
