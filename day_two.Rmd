@@ -1,6 +1,6 @@
 ---
 title: 'Day Two: Data Munging'
-author: "Dillon Niederhut & Chris Krogslund"
+author: "Dillon Niederhut"
 date: "July 27, 2015"
 output: pdf_document
 ---
@@ -349,3 +349,10 @@ install.packages('plyr')
 library(reshape2)
 library(plyr)
 ```
+
+# Acknowledgements
+
+## Materials taken from:
+
+[Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
+[Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
