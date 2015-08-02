@@ -47,14 +47,6 @@ read.csv("mydata.csv")
 
 note that we are only reading the files by doing this
 
-## the files don't need to be local in most cases
-
-```{r}
-#Looks like the quandl API now requires a key
-link <- "https://www.quandl.com/api/v1/datasets/OPEC/ORB.csv"
-read.csv(link)
-```
-
 ## R also has its own kind of data file
 
 ```{r}
@@ -73,7 +65,7 @@ if you are exporting data from excel, be sure to export datetimes as strings, as
 # need to create excel file
 install.packages("xlsx")
 library(xlsx)
-read.xlsx()
+read.xlsx("data/cpds_excel_new.xlsx")
 ```
 
 ## you can also use R to read in data from proprietary software
@@ -82,23 +74,21 @@ read.xlsx()
 # examples of these?
 install.packages("foreign")
 library(foreign)
-read.dta()
+read.dta("data/cpds_stata.dta")
 read.spss()
 read.octave()
 ```
 
-# scraping from the interwebs
+# data does not need to be in the local filesystem
 
-## something about Rcurl
+## R has an interface to curl called RCurl
 
 ```{r}
 install.packages('RCurl')
 library(RCurl)
 ```
 
-## something about html parsing
-
-## someting about RSS feeds
+## you can use this to access remote data
 
 ```{r}
 link <- "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
@@ -106,9 +96,19 @@ page <- getURL(url = link)
 xmlParse(file = page)
 ```
 
+## R also has libraries for pulling and parsing web pages
+
+```{r}
+install.packages("XML")
+library(XML)
+
+link<-"http://clerk.house.gov/evs/2014/ROLL_000.asp"
+readHTMLTable(doc=link, header=T, which=1, stringsAsFactors=F)
+```
+
 # Connecting to a database
 
-why read from a database? they use less memory, are faster, create their own backups, and offer optimized searching/joining
+why read from a database? they use less memory, are faster, create their own backups, and offer optimized querying/joining
 
 databases generally come in two flavors, relational and non-relational, which has to do with how important schemas are (and is a bit beyond the scope of an R intro)
 
@@ -169,8 +169,8 @@ in tidying, we are arranging our data structurally such that each row contains e
 ## exporting data from other software can do weird things to numbers and factors
 
 ```{r}
-read.csv()
-str()
+dirty <- read.csv('data/dirty.csv')
+str(dirty)
 ```
 
 ## it's usually better to DISABLE R's intuition about data types
@@ -178,16 +178,26 @@ str()
 unless you already know the data is clean (e.g. you are the one who wrote it)
 
 ```{r}
-read.csv(,stringsAsFactors = FALSE)
-str(data)
+dirty <- read.csv('data/dirty.csv',stringsAsFactors = FALSE)
+str(dirty)
 ```
 
-## then, you can coerce the data into the types they should be
+## let's start by removing the empty rows and columns
 
 ```{r}
-<- as.numeric()
-<- as.factor()
-<- as.Date()
+tail(dirty)
+dirty <- dirty[1:5,-6]
+dim(dirty)
+```
+
+## you can replace variable names
+
+and you should, if they are uninformative or long
+
+```{r}
+colnames(dirty)
+colnames(dirty) <- c("timestamp","height","department","enrollment","birth.order")
+colnames(dirty)
 ```
 
 ## it's common for hand-coded data to have a signifier for subject-missingness 
@@ -195,32 +205,59 @@ str(data)
 (to help differentiate it from your hand-coder forgetting to do something)
 
 ```{r}
-$r
+dirty$enrollment
 ```
 
 ## you should replace all of these values in your dataframe with R's missingness signifier, `NA`
 
 ```{r}
-[ == 999] <- NA
+dirty[dirty == 999] <- NA
+dirty$enrollment
 ```
 
-we'll talk more about missingness later today
+## let's start with the birth order variable
 
-## you can replace variable names
-
-and you should, if they are uninformative or long
+If your spreadsheet software automatically adds commas to long values, R will interpret the whole column as character instead of numeric
 
 ```{r}
-colnames(my.data)
-colnames(my.data) <- c("numeric","character","boolean","date","missing")
-colnames(my.data)
+dirty$birth.order
 ```
 
-## now we can look for oddities
+This is easy to fix, as that large value is illegal anyway (no one has 9000 children)
 
-## update them by selective assignment
+## that timestamp variable is not in a format R likes
 
-there are easier ways to do this with conditionals and subsetting, which we'll get to in a few minutes
+base R doesn't handle time well, so we need to get rid of the time part of the timestamp
+
+```{r}
+dirty$timestamp[1]
+dirty$timestamp <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$timestamp)
+dirty$timestamp[1]
+```
+
+## the shoe size variable is character because of how half sizes were entered
+
+```{r}
+
+```
+
+## the height variable is in four different units
+
+we can fix this with a lookup table
+
+```{r}
+
+```
+
+## then, you can coerce the data into the types they should be
+
+```{r}
+dirty$timestamp <- as.Date(dirty$timestamp,'%m/%d/%Y')
+dirty$height <- as.numeric(dirty$height)
+dirty$department <- as.factor()
+dirty$enrollment <- as.logical()
+dirty$birth.order <- as.numeric(dirty$birth.order)
+```
 
 # Subsetting and merging
 
@@ -233,6 +270,8 @@ in R, you use double symbols for testing
 1 != 1
 1 >= 1
 ```
+
+(you've already seen a couple of these)
 
 ## tests return boolean vectors
 
@@ -311,14 +350,19 @@ imputing via MI + error is currently the best option
 ## listwise deletion is wasteful
 
 ```{r}
-[is.na() == FALSE,]
+na.omit(dirty)
 ```
 
 ## casewise deletion is what R does internally
 
 ```{r}
-
+nrow(dirty)
+sum(is.na(dirty$height))
+sum(is.na(dirty$birth.order))
+length(lm(height ~ birth.order,data=dirty)$fitted.values)
 ```
+
+this is usually the default strategy
 
 ## remember how we talked about the extensibility of R?
 
@@ -329,25 +373,202 @@ install.packages('Amelia')
 library(Amelia)
 ```
 
+## let's use this large dataset as an example
+
+```{r}
+large <- read.csv('data/large.csv')
+summary(large)
+nrow(na.omit(large))
+```
+
 ## for it to work you need low missingness and large N
 
 ```{r}
+a <- amelia(large,m = 1)
+print(a)
+```
 
+## amelia returns a list, where the first item is a list of your imputations
+
+we only did one, so here it is
+
+```{r}
+large.imputed <- a[[1]][[1]]
+summary(large.imputed)
 ```
 
 ## if you give it a tiny dataset, it will fuss at you
 
 ```{r}
-
+a <- amelia(large[990:1000,],m = 1)
+print(a)
 ```
 
 # Reshaping
 
+now that our data is clean, it's time to put it in a tidy format. this is a way of storing data that makes it easy to:
+
+1. make graphs
+2. run tests
+3. summarize
+4. transform into other formats
+
+we are basically trying to organize ourselves such that:
+
+1. any grouping is made on rows
+2. any testing is done between columns
+
+## most tidying can be done with two R packages
+
 ```{r}
 install.packages('reshape2')
+install.packages('stringr')
 install.packages('plyr')
 library(reshape2)
+library(stringr)
 library(plyr)
+```
+
+## let's grab some data from Pew
+
+```{r}
+pew <- as.data.frame(read.spss("data/pew.sav"))
+religion <- pew[c("q16", "reltrad", "income")]
+rm(pew)
+```
+
+## we'll start by cleaning up the factor variables
+
+```{r}
+religion$reltrad <- as.character(religion$reltrad)
+religion$reltrad <- str_replace(religion$reltrad, " Churches", "")
+religion$reltrad <- str_replace(religion$reltrad, " Protestant", " Prot")
+religion$reltrad[religion$q16 == " Atheist (do not believe in God) "] <- "Atheist"
+religion$reltrad[religion$q16 == " Agnostic (not sure if there is a God) "] <- "Agnostic"
+religion$reltrad <- str_trim(religion$reltrad)
+religion$reltrad <- str_replace_all(religion$reltrad, " \\(.*?\\)", "")
+
+religion$income <- c("Less than $10,000" = "<$10k", 
+  "10 to under $20,000" = "$10-20k", 
+  "20 to under $30,000" = "$20-30k", 
+  "30 to under $40,000" = "$30-40k", 
+  "40 to under $50,000" = "$40-50k", 
+  "50 to under $75,000" = "$50-75k",
+  "75 to under $100,000" = "$75-100k", 
+  "100 to under $150,000" = "$100-150k", 
+  "$150,000 or more" = ">150k", 
+  "Don't know/Refused (VOL)" = "Don't know/refused")[religion$income]
+
+religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k", 
+  "$75-100k", "$100-150k", ">150k", "Don't know/refused"))
+```
+
+## now we can reduce this down to three columns for three variables
+
+```{r}
+religion <- count(religion, c("reltrad", "income"))
+names(religion)[1] <- "religion"
+```
+
+## notice how easy it is to subset now
+
+```{r}
+religion[religion$religion == 'Unaffiliated',]
+```
+
+but raw counts aren't very helpful for religons with widely different population sizes
+
+""""
+## enter plyr
+
+- *plyr* is the go-to package for all your splitting-applying-combining needs
+- Among its many benefits (above base R capabilities):
+a) Don't have to worry about different name, argument, or output consistencies
+b) Easily parallelized 
+c) Input from, and output to, data frames, matricies, and lists
+d) Progress bars for lengthy computation
+e) Informative error messages
+
+## group-wise operations/plyr/selecting functions
+
+- Two essential questions:
+    1. What is the class of your input object?
+    2. What is the class of your desired output object?
+- If you want to split a **d**ata frame, and return results as a **d**ata frame, you use **dd**ply
+- If you want to split a **d**ata frame, and return results as a **l**ist, you use **dl**ply
+- If you want to split a **l**ist, and return results as a **d**ata frame, you use **ld**ply
+
+
+```{r}
+# Using the appropriate plyr function (ddply), compute vote percentages for Kerry (pres04==1), Bush (pres04==2), Nader (pres04==3), and others (pres04==9)
+ddply(.data=red.blue, .variables=.(race), .fun=summarize, 
+      kerry=length(pres04[pres04==1])/length(pres04)*100, 
+      bush=length(pres04[pres04==2])/length(pres04)*100, 
+      nader=length(pres04[pres04==3])/length(pres04)*100, 
+      other=length(pres04[pres04==9])/length(pres04)*100 
+)
+```
+
+Consider the case where we want to calculate vote choice statistics across race from a data.frame, and return them as a list:
+
+```{r}
+dlply(.data=red.blue, .variables=.(race), .fun=summarize, 
+      kerry=length(pres04[pres04==1])/length(pres04)*100, 
+      bush=length(pres04[pres04==2])/length(pres04)*100, 
+      nader=length(pres04[pres04==3])/length(pres04)*100, 
+      other=length(pres04[pres04==9])/length(pres04)*100 
+)
+```
+
+# Group-wise Operations/plyr/functions
+
+- plyr can accomodate any user-defined function, but it also comes with some pre-defined functions that assist with the most common split-apply-combine tasks
+- We've already seen **summarize**, which creates user-specified vectors and combines them into a data.frame.  Here are some other helpful functions:
+
+**transform**: applies a function to a data.frame and adds new vectors (columns) to it
+
+```{r}
+# Add a column containing the average age of the race of the individual
+red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
+      race.avg.age=mean(x=age9, na.rm=T))
+unique(red.blue.transform$race.avg.age)
+```
+
+Note that **transform** can't do transformations that involve the results of *other* transformations from the same call
+
+```{r}
+# Attempt to add new columns that draw on other (but still new) columns
+red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
+      race.avg.age=mean(x=age9, na.rm=T),
+      race.avg.age.plusone=race.avg.age+1)
+```
+
+For this, we need **mutate**: just like transform, but it executes the commands iteratively so  transformations can be carried out that rely on previous transformations from the same call
+
+```{r}
+# Attempt to add new columns that draw on other (but still new) columns
+red.blue.mutate<-ddply(.data=red.blue, .variables=.(race), .fun=mutate,
+      race.avg.age=mean(x=age9, na.rm=T),
+      race.avg.age.plusone=race.avg.age+1)
+unique(red.blue.mutate$race.avg.age)
+unique(red.blue.mutate$race.avg.age.plusone)
+```
+
+Another very useful function is **arrange**, which orders a data frame on the basis of column contents
+
+```{r}
+# Arrange by "age9", ascending
+red.blue.age<-plyr::arrange(df=red.blue, age9)
+red.blue.age[1:25, 1:5]
+# Arrange by "age9", descending
+red.blue.age<-plyr::arrange(df=red.blue, desc(age9))
+red.blue.age[1:25, 1:5]
+# Arrange by "age9" then "sex"
+red.blue.age.sex<-plyr::arrange(df=red.blue, age9, sex)
+red.blue.age.sex[1:25, 1:5]
+# Arrange by "sex" (descending) then "age9"
+red.blue.sex.age<-plyr::arrange(df=red.blue, desc(sex), age9)
+red.blue.sex.age[1:25, 1:5]
 ```
 
 # Acknowledgements
@@ -356,3 +577,17 @@ library(plyr)
 
 [Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
 [Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
+
+a <- seq(-500,499)
+large.data <- data.frame(a=rnorm(1000,mean=0, sd=10))
+large.data$b <- large.data$a + abs(a)
+large.data$c <- large.data$a - a**2
+a <- which(large.data$a %in% sample(large.data$a,45))
+large.data$a[a] <- NA
+a <- which(large.data$b %in% sample(large.data$b,45))
+large.data$b[a] <- NA
+a <- which(large.data$c %in% sample(large.data$c,45))
+large.data$c[a] <- NA
+write.csv(large.data,'data/large.csv',row.names=FALSE)
+large <- read.csv('data/large.csv')
+summary(large)
