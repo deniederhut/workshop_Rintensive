@@ -7,16 +7,87 @@ output: pdf_document
 
 # Introduction
 
-we've been spending a lot of time working with a toy data set
+okay, time for the business. 
 
-let's look at something more realistic for these exercises
+analysis here is going to procede in two steps:
+
+1. exploratory data analysis
+2. statistical inference
+
+our treatment of graphing owes a lot to the Grammar of Graphics, 
 
 # Summarizing
 
+## let's load in a dataset from the EdX servers about 
+
+```{r}
+dat <- read.csv()
+str(dat)
+```
+
+## R provides two easy/simple summary functions in the base package
+
+```{r}
+table(dat)
+summary(dat)
+```
+
+## plyr provides a few more ways to aggregate things
+
+```{r}
+```
+
 # Plotting
+
+## baseplot in R isn't fantastic, so we're going to use ggplot
+
+```{r}
+install.packages('ggplot2')
+library(ggplot)
+```
+
+## qplot
+
+## geom_hist
+
+## geom_bar
+
+## geom_point
+
+## geom_scatter
+
+## geom_boxplot
+
+## stat_smooth
+
+## titles and labels
+
+## facetting
 
 # Mean testing
 
+## t.test
+
+## aov
+
 # Linear models
 
+## cor.test (Pearson)
+
+## lm
+
+## lmtest
+
+## robust
+
+## MASS
+
 # Nonparametric
+
+## cor.test (Spearman)
+
+## chisq
+
+## Fisher's exact test
+
+## permutation tests
