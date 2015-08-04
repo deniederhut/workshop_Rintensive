@@ -18,23 +18,33 @@ our treatment of graphing owes a lot to the Grammar of Graphics,
 
 # Summarizing
 
-## let's load in a dataset from the EdX servers about 
+## let's load in some data about D-Lab feedback 
 
 ```{r}
-dat <- read.csv()
+load('data/feedback.Rda')
 str(dat)
 ```
 
 ## R provides two easy/simple summary functions in the base package
 
 ```{r}
-table(dat)
 summary(dat)
+table(dat$department)
 ```
 
-## plyr provides a few more ways to aggregate things
+think back to yesterday - how would we make months out of the date variable?
 
 ```{r}
+dat$month <- factor(months(dat$timestamp), levels = month.name)
+summary(dat$month)
+```
+
+## reshape provides a few more ways to aggregate things
+
+```{r}
+library(reshape2)
+dcast(dat[dat$gender == 'Female/Woman' | dat$gender == 'Male/Man',], department ~ gender)
+dcast(melt(dat, measure.vars = c('course.delivered')), month ~ 'Delivered', fun.aggregate = mean)
 ```
 
 # Plotting
@@ -43,26 +53,111 @@ summary(dat)
 
 ```{r}
 install.packages('ggplot2')
-library(ggplot)
+library(ggplot2)
 ```
 
 ## qplot
 
-## geom_hist
+quickplot has strong intuitions about what you want to see
+
+```{r}
+qplot(instructor.communicated, data = dat)
+qplot(month, course.delivered, data = dat)
+```
 
 ## geom_bar
 
-## geom_point
+```{r}
+ggplot(data=dat, aes(x=month)) + geom_bar()
+```
 
-## geom_scatter
+## geom_hist
+
+```{r}
+ggplot(data=dat, aes(x=course.delivered)) + 
+  geom_histogram(binwidth=1)
+```
+
+you can add color to this plot
+
+```{r}
+ggplot(data=dat, aes(x=course.delivered)) + 
+  geom_histogram(binwidth=1, fill = 'yellow', colour= 'blue')
+```
 
 ## geom_boxplot
 
+```{r}
+ggplot(data=dat, aes(x=gender,y=interest)) + geom_boxplot()
+```
+
+## geom_point
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + geom_point()
+```
+
+all of these values are discrete, which makes them hard to see
+
+## geom_jitter
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
+  geom_jitter()
+```
+
+not only can you add color, you can make the color a mapping of other variables
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
+  geom_jitter(aes(colour = month))
+```
+
+## combining layers
+
+```{r}
+ggplot(data=dat, aes(x=month, y=course.delivered)) + 
+  geom_boxplot(colour = 'gold') + 
+  geom_jitter(colour = 'blue')
+```
+
 ## stat_smooth
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
+  geom_jitter() + 
+  stat_smooth(method = 'lm')
+```
+
+if you are using colour as an aesthetic, you'll produce stats for each color
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered, colour = month)) + 
+  geom_jitter() + 
+  stat_smooth(method = 'lm', se = FALSE)
+```
 
 ## titles and labels
 
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
+  geom_jitter() + 
+  stat_smooth(method = 'lm', colour = 'black') + 
+  xlab('How well the instructor communicated (1-7)') + 
+  ylab('How well the course delivered advertised content (1-7)') + 
+  ggtitle("I have no idea what I'm doing") 
+```
+
 ## facetting
+
+often useful for looking at relationships between three variables at the same time
+
+```{r}
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
+  geom_jitter() + 
+  stat_smooth(method = 'lm') +
+  facet_grid(. ~ useful)
+```
 
 # Mean testing
 
