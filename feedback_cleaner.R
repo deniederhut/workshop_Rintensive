@@ -119,8 +119,8 @@ for (pattern in c('welfare')) {
 for (pattern in c('socio', 'soc$', 'soc ')) {
   dat[grepl(pattern, dat$department), 'department'] <- "Sociology"
 }
-department.levels <- grep('[A-Z]+',unique(dat$department), value=TRUE)
-dat$department <- factor(dat$department, levels = department.levels)
+department.levels <- grep('[A-Z]+', unique(dat$department), value=TRUE)
+dat$department <- factor(dat$department, levels = sort(department.levels))
 
 # type other columns
 dat$hear <- as.factor(dat$hear)
