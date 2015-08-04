@@ -128,4 +128,4 @@ dat$gender <- as.factor(dat$gender)
 dat$position <- as.factor(dat$position)
 
 # output
-write.csv(dat, 'data/feedback.csv')
+save(dat, file='data/feedback.Rda')
