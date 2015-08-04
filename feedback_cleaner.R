@@ -50,7 +50,7 @@ for (pattern in c('demo')) {
 for (pattern in c('econ')) {
   dat[grepl(pattern, dat$department), 'department'] <- "Economics"
 }
-for (pattern in c('ed.', 'edu', 'gse', 'g.s.e.', 'pome')) {
+for (pattern in c('ed[.]+', 'edu', 'gse', 'g.s.e.', 'pome')) {
   dat[grepl(pattern, dat$department), 'department'] <- "Education"
 }
 for (pattern in c('erg', 'energy')) {
@@ -92,7 +92,7 @@ for (pattern in c('music')) {
 for (pattern in c('hwni', 'neuro', 'helen wills')) {
   dat[grepl(pattern, dat$department), 'department'] <- "Neuroscience"
 }
-for (pattern in c('pol.', 'poli ', 'politic')) {
+for (pattern in c('pol[.]+', 'poli ', 'politic')) {
   dat[grepl(pattern, dat$department), 'department'] <- "Political Science"
 }
 for (pattern in c('psych')) {
