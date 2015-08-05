@@ -577,17 +577,3 @@ red.blue.sex.age[1:25, 1:5]
 
 [Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
 [Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
-
-a <- seq(-500,499)
-large.data <- data.frame(a=rnorm(1000,mean=0, sd=10))
-large.data$b <- large.data$a + abs(a)
-large.data$c <- large.data$a - a**2
-a <- which(large.data$a %in% sample(large.data$a,45))
-large.data$a[a] <- NA
-a <- which(large.data$b %in% sample(large.data$b,45))
-large.data$b[a] <- NA
-a <- which(large.data$c %in% sample(large.data$c,45))
-large.data$c[a] <- NA
-write.csv(large.data,'data/large.csv',row.names=FALSE)
-large <- read.csv('data/large.csv')
-summary(large)
