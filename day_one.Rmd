@@ -9,7 +9,7 @@ output: pdf_document
 
 A note to the instructor:
 
-These materials are meant to be guides. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+These materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
 
 It is a good idea to start off the class by asking folks why they want to learn R. Common responses include:
 
@@ -20,28 +20,51 @@ It is a good idea to start off the class by asking folks why they want to learn 
 
 The outline below is designed to give each of these kinds of students the tools they need to get what they want out of R while avoiding common pitfalls. As the instructor, you should draw on your own experience to include further examples and advice, especially for students who do not fall into one of the four categories above.
 
+It may also be helpful to start off with a little bit of background knowledge about R. I find that explicitly informing students about the design principles of a language is a quick way to bootstrap their intuitions about how to use that language. R, for example, is a very old language whose objective was to allow scientists to quickly and interactively conduct statistical tests when the only other options at the time were:
+
+1. Compile a whole program in C or FORTRAN; or,
+2. Do the math yourself with a pencil and a piece of paper
+
+Obviously, both of these options suck, but they both suck for precisely the same reasons; they require lots of human time, and those humans have to be very knowledgeable about the mathematical principles underlying statistical computation (e.g. that even simple functions have multiple implementations to balance accuracy/efficiency for different input values).
+
+The good news is that very complicated processes like logistic regression are a single command in R. The bad news is that R is typically not concerned with being logical or conistent. If you find yourself wanting to tear your hair out, this is **normal**. 
+
 # Object Oriented Programming
 
-???
+In the grand scheme of computer software, object orientation is a way of organizing code such that it is easy to update without breaking. This means grouping functions that serve a similar purpose into hierarchies, which is a confusing and abstract way to think about things.
 
-## Everything in R is an object
+You can think about it this way: a soccer ball is an object. So is a basketball. They share a lot of things in common. It's simpler to know that balls generaly bounce than to explicitly declare for every object I have ever seen in my entire life whether it bounces or not. I can't bounce you, for example, but you didn't need to tell me that when I met you. If I came to believe that people were bounce-able, I would update my idea of people generally, not every person specifically. 
 
-yes, even the functions, just watch
+We call things like you and basketball `objects`, and they are in `classes` like human and ball. If I want to create a new object, like a football, I don't have to declare every single thing there is to know about footballs. I can say it `inherits` `attributes` from the `class` ball, except that it's an oblate spheroid instead of a sphere. Easy.
+
+## everything in R is an object
+
+yes, even the commands, just watch
 
 ```{r}
 ls
 ```
 
+`ls`, like basketball, is a specific thing with a `name` and stuff inside it that makes it `ls` and not dillon niederhut. in this particular instance, we are looking at the function that tells you what `objects` are in your `environment`
+
+until we get to functional programming, your `environment` is just R plus whatever you put in R
+
 ## in R, you store objects with names with the `<-` operator
+
+just like you need names to tell things apart, R does too
 
 ```{r}
 my.name <- dir
+my.name
 ```
 
-## or
+## names must be unique
+
+everytime you give an `object` a `name`, it removes anything that already had that `name` from your environment
 
 ```{r}
 my.name <- dir()
+my.name
 ```
 
 you see those parentheses? that means you are calling that object on other objects
@@ -89,9 +112,9 @@ ls()
 
 ## we can clean our environment with
 
-```{r}
+```{r, eval=FALSE}
 rm(list = ls())
-#exists(test)
+exists(test)
 ```
 
 ## you can pull documentation with `?`
@@ -124,14 +147,14 @@ many people write clever software that makes R smarter/better/faster/stronger
 
 ## you can install these packages with
 
-```{r}
-#install.packages("Amelia")
+```{r, eval=FALSE}
+install.packages("Amelia")
 ```
 
 ## and include them in your environment with
 
 ```{r}
-#library(Amelia)
+library(Amelia)
 ```
 
 note that when you are installing something, you give R a bunch of letters to search CRAN for, which is why it's in quotes
@@ -140,8 +163,8 @@ but when you pull it into your environment, you are calling a function on a vari
 
 ## if you try to call `library` on package that you haven't downloaded, R will fuss at you
 
-```{r}
-#library(supercalifragilisticexpialedocious)
+```{r, eval=FALSE}
+library(supercalifragilisticexpialedocious)
 ```
 
 # Math in R
@@ -399,8 +422,8 @@ str(my.list)
 
 ## lists are simple containers, and are not additive or multiplicative
 
-```{r}
-#my.list * list(1, 'two', FALSE)
+```{r, eval=FALSE}
+my.list * list(1, 'two', FALSE)
 ```
 
 ## subsetting a list with brackets pulls out the element along with its attribute
