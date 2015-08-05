@@ -380,3 +380,5 @@ surprising no one, it is not
 # Acknowledgements
 
 ## Materials taken from:
+
+[D-Lab's Feedback Analytics](https://github.com/dlab-berkeley/feedback-analytics)
