@@ -32,11 +32,13 @@ summary(dat)
 table(dat$department)
 ```
 
-think back to yesterday - how would we make months out of the date variable?
+think back to yesterday - how would we make weekdays out of the date variable?
 
 ```{r}
-dat$month <- factor(months(dat$timestamp), levels = month.name)
-summary(dat$month)
+dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
+                   levels = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
+                   )
+summary(dat$wday)
 ```
 
 ## reshape provides a few more ways to aggregate things
@@ -44,7 +46,7 @@ summary(dat$month)
 ```{r}
 library(reshape2)
 dcast(dat[dat$gender == 'Female/Woman' | dat$gender == 'Male/Man',], department ~ gender)
-dcast(melt(dat, measure.vars = c('course.delivered')), month ~ 'Delivered', fun.aggregate = mean)
+dcast(melt(dat, measure.vars = c('course.delivered')), wday ~ 'Delivered', fun.aggregate = mean)
 ```
 
 # Plotting
@@ -77,13 +79,13 @@ it has very strong intuitions about what you want to see, and is not particularl
 
 ```{r}
 qplot(instructor.communicated, data = dat)
-qplot(month, course.delivered, data = dat)
+qplot(wday, course.delivered, data = dat)
 ```
 
 ## for 1D cateforical, use bar
 
 ```{r}
-ggplot(data=dat, aes(x=month)) + geom_bar()
+ggplot(data=dat, aes(x=wday)) + geom_bar()
 ```
 
 ## for 1D continuous, use hist
@@ -133,7 +135,7 @@ not only can you add color, you can make the color a mapping of other variables
 
 ```{r}
 ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
-  geom_jitter(aes(colour = month))
+  geom_jitter(aes(colour = wday))
 ```
 
 the last time we used `colour` it was not an aesthetic - why is it now?
@@ -141,7 +143,7 @@ the last time we used `colour` it was not an aesthetic - why is it now?
 ## you can stack layers until your eyes hurt
 
 ```{r}
-ggplot(data=dat, aes(x=month, y=course.delivered)) + 
+ggplot(data=dat, aes(x=wday, y=course.delivered)) + 
   geom_boxplot(colour = 'gold') + 
   geom_jitter(colour = 'blue')
 ```
@@ -157,7 +159,7 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) +
 if you are using colour as an aesthetic, you'll produce stats for each color
 
 ```{r}
-ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered, colour = month)) + 
+ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered, colour = wday)) + 
   geom_jitter() + 
   stat_smooth(method = 'lm', se = FALSE)
 ```
@@ -315,16 +317,66 @@ dat.listwise$resid <- model.1$residuals
 then we can do this
 
 ```{r}
-ggplot(data = dat.listwise, aes(x=department,y=resid)) + 
+ggplot(data = dat.listwise, aes(x=gender,y=resid)) + 
   geom_boxplot()
 ```
 
 # Nonparametric
 
-## cor.test (Spearman)
+parametric refers to using means, deviations, and other estimates of population parameters
+
+*BUT* what if you don't want to make assumptions about the structure of the population?
+
+or what if you **gasp** can't?
+
+## ranked variables
+
+a simple case is where means don't have meaning
+
+above we were looking at correlations between Likert variables
+
+all Likerts are really rank variables, which means they don't act like actual number-y numbers
+
+in the real world, an 6 foot tall person is twice as tall as a 3 foot tall person
+
+but is a level '6' really twice as many barriers to access as a '3'?
+
+**NOPE**
+
+we know that 6 is more than 3, but can't really say how much - in that sense then, a scale of 1-7 is exactly the same thing as a scale of a-g.
+
+## median testing ranks
+
+we use Mann-Whitney sums to test that the ranks are centered the same way
+
+```{r}
+wilcox.test(dat$outside.barriers, dat$inside.barriers, alternative = "two.sided", paired = FALSE, mu = 0, conf.level = 0.95)
+```
+
+see how this setup looks exactly like a t-test? that's not an accident
+
+## correlating ranks
+
+this is just like the `cor.test` you did above, but with `method` set to equal 'spearman' instead of pearson
+
+```{r}
+cor.test(dat$outside.barriers, dat$inside.barriers, method = 'spearman')
+```
+
+rho is pretty close to the r from above
 
 ## chisq
 
-## Fisher's exact test
+what if both of your variables are categories? we can test their counts with R's built in `chisq.test` function
 
-## permutation tests
+i.e. what if we want to know if gender is distributed evenly over departments?
+
+```{r}
+chisq.test(dat$gender, dat$department)
+```
+
+surprising no one, it is not
+
+# Acknowledgements
+
+## Materials taken from:
