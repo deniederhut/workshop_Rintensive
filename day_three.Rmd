@@ -49,29 +49,46 @@ dcast(melt(dat, measure.vars = c('course.delivered')), month ~ 'Delivered', fun.
 
 # Plotting
 
-## baseplot in R isn't fantastic, so we're going to use ggplot
+## every time you use `base::plot`, Edward Tufte kills a kitten
+
+- we'll be using ggplot, R's implementation of the **grammar of graphics**
+
+- in this grammar, you use 'aesthetics' to define how data is mapped to objects the graph space
+
+- each graph space has at least three layers:
+    - theme/background/annotations
+    - axes
+    - objects
+
+- most objects are geometric shapes
+
+- some objects are statistics built on those shapes
+
+- you can stack as many layers as you like
 
 ```{r}
 install.packages('ggplot2')
 library(ggplot2)
 ```
 
-## qplot
+## use qplot for initial poking around
 
-quickplot has strong intuitions about what you want to see
+it has very strong intuitions about what you want to see, and is not particularly customizable
 
 ```{r}
 qplot(instructor.communicated, data = dat)
 qplot(month, course.delivered, data = dat)
 ```
 
-## geom_bar
+## for 1D cateforical, use bar
 
 ```{r}
 ggplot(data=dat, aes(x=month)) + geom_bar()
 ```
 
-## geom_hist
+## for 1D continuous, use hist
+
+this is really just convenience for `geom_bar(stat = 'bin')`, as opposed to bar plots, whose `stat` is `'count'`
 
 ```{r}
 ggplot(data=dat, aes(x=course.delivered)) + 
@@ -82,16 +99,20 @@ you can add color to this plot
 
 ```{r}
 ggplot(data=dat, aes(x=course.delivered)) + 
-  geom_histogram(binwidth=1, fill = 'yellow', colour= 'blue')
+  geom_histogram(binwidth=1, fill = 'gold', colour= 'blue')
 ```
 
-## geom_boxplot
+GO BEARS
+
+## for many 1D variables, use a box plot
+
+these are handy for a whole bunch of reasons, and you should make them your close associates
 
 ```{r}
 ggplot(data=dat, aes(x=gender,y=interest)) + geom_boxplot()
 ```
 
-## geom_point
+## to plot two continuous variables, use points
 
 ```{r}
 ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + geom_point()
@@ -99,7 +120,9 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + geom_poin
 
 all of these values are discrete, which makes them hard to see
 
-## geom_jitter
+## to scatter points randomy, use jitter
+
+this is really just convenience for `geom_point(position = jitter())` 
 
 ```{r}
 ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
@@ -113,7 +136,9 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) +
   geom_jitter(aes(colour = month))
 ```
 
-## combining layers
+the last time we used `colour` it was not an aesthetic - why is it now?
+
+## you can stack layers until your eyes hurt
 
 ```{r}
 ggplot(data=dat, aes(x=month, y=course.delivered)) + 
@@ -121,7 +146,7 @@ ggplot(data=dat, aes(x=month, y=course.delivered)) +
   geom_jitter(colour = 'blue')
 ```
 
-## stat_smooth
+## add summary functions with smooth
 
 ```{r}
 ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
@@ -137,7 +162,7 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered, colour = mon
   stat_smooth(method = 'lm', se = FALSE)
 ```
 
-## titles and labels
+## good scientists put units on their axes
 
 ```{r}
 ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) + 
@@ -147,6 +172,12 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) +
   ylab('How well the course delivered advertised content (1-7)') + 
   ggtitle("I have no idea what I'm doing") 
 ```
+
+the general point here is that every single object on this graph is customizable
+
+frequent customizations are very simple to add
+
+infrequent customizations will take a lot of tinkering your part
 
 ## facetting
 
@@ -161,21 +192,132 @@ ggplot(data=dat, aes(x=instructor.communicated, y=course.delivered)) +
 
 # Mean testing
 
-## t.test
+a picture is worth 1,000 words, but a p-value is worth a dissertation
+
+basically, inferential statistics is the application of probability theory to decide what is real and what isn't
+
+we'll start by trying to tell whether differences between group summaries are real
+
+## t.test with two vectors (default method)
+
+```{r}
+t.test(dat$inside.barriers, dat$outside.barriers)
+```
+
+note that R takes care of the defaults for you - what it is really computing is `t.test(dat$inside.barriers, dat$outside.barriers, alternative = "two.sided", paired = FALSE, var.equal = FALSE, mu = 0, conf.level = 0.95)
+
+how would you find this out for yourself?
+
+## t.test with subsets of one vector (default method)
+
+```{r}
+t.test(dat$outside.barriers[dat$gender == "Male/Man"], dat$outside.barriers[dat$gender == "Female/Woman"])
+```
+
+remember all that 'different kinds of objects have different methods' crap?
+
+## t.test with S3 method
+
+```{r}
+t.test(outside.barriers ~ gender, data = dat, subset = dat$gender %in% c("Male/Man", "Female/Woman"))
+```
 
 ## aov
 
-# Linear models
+first, you would think anova would be called by `anova`, but that's reserved for conducting F-tests on lm objects
+
+second, you really shouldn't be using anova in the first place, but if you must, the syntax looks like this
+
+```{r}
+aov(outside.barriers ~ gender, data = dat)
+```
+
+this isn't particularly helpful, but remember that it is an object, and we can call other, more helpful functions, on that object
+
+remember our old friend `summary`? it works on almost everything
+
+```{r}
+model.1 <- aov(outside.barriers ~ gender, data = dat)
+summary(model)
+```
+
+that's a little better - but what about post-hoc testing?
+
+```{r}
+TukeyHSD(model.1)
+```
+
+# linear models
+
+mean tests are really just a subset of linear models where one of your variables is a category
 
 ## cor.test (Pearson)
+ 
+earlier, we were looking at differences between the means of two variables
+
+but those variables were both continuous, so we can ask whether they are related
+
+```{r}
+cor.test(dat$outside.barriers, dat$inside.barriers)
+```
+
+okay, so they're related - now what?
 
 ## lm
 
-## lmtest
+this is probably the closest you will get to building a linear model by hand
 
-## robust
+this means lm is a powerful tool, but you have to know what you're doing
 
-## MASS
+the basic call is the S3 method
+
+```{r}
+model.1 <- lm(inside.barriers ~ outside.barriers, data = dat)
+summary(model.1)
+```
+
+## R automatically one-hot encodes your categories
+
+```{r}
+model.2 <- lm(inside.barriers ~ outside.barriers + department, data = dat)
+summary(model.2)
+```
+
+## R does not assume you want the full factorial model
+
+```{r}
+model.3 <- lm(inside.barriers ~ outside.barriers + department + outside.barriers*department, data = dat)
+summary(model.3)
+```
+
+## extract model parameters with `$`
+
+```{r}
+model.1$coefficients
+model.1$coefficients[[2]]
+```
+
+## this is useful if you want to plot residuals
+
+```{r}
+dat$residuals <- model.1$residuals
+```
+
+wait crap! remember how we talked about R having casewise deletion + crappy indexing? this is where it hurts
+
+we have to do something like this:
+
+```{r}
+dat.listwise <- dat[!is.na(dat$inside.barriers) & !is.na(dat$outside.barriers), ]
+dat.listwise$resid <- model.1$residuals
+```
+
+then we can do this
+
+```{r}
+ggplot(data = dat.listwise, aes(x=department,y=resid)) + 
+  geom_boxplot()
+```
 
 # Nonparametric
 
