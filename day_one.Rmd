@@ -67,21 +67,57 @@ my.name <- dir()
 my.name
 ```
 
-you see those parentheses? that means you are calling that object on other objects
+you see those parentheses? that means you are calling an object (here, it's a function evaluator) on `dir`.
 
-???
+## classes in R
 
-# Living in R
+because it is code to be evalueated, `dir` belongs in a class called 'functions'
+
+```{r}
+class(dir)
+```
+
+functions all have the same basic structure
+
+`function(arguments)`, where the arguments are other objects, like
+
+```{r}
+sum(1,2,3)
+```
+
+`1,2,3` are also objects, with a class of their own
+
+when you call a function, it looks at the classes of the things you are calling it on to figure out how to behave
+
+in much the same way, if my function is to move things from point A to point B, the way I might do that to a basketball is different from the way I might do that to you
+
+what kind of class do you think `1` is?
+
+## more bad news
+
+R started out as a functional programming language (more on this later), to which object orientation was later added
+
+this means that R doesn't know that some things are objects, because they predate the addition of class systems
+
+```{r}
+is.object(sum)
+```
+
+most of R uses what are called S3 methods, which have no rules except be easy to use. this can make them wildly inconsistent, even to the point where a single function will have multiple sets of rules for how it can be called (you'll see this in a couple of days).
+
+> as a side note, there is also no agreement about how to name things, so you'll likely see a mixture of snake_case and CamelCase, based on the preferences of the person who originally wrote the function
+
+# living in R
 
 ## figure out where you are with
-
-like in Unix, in R you are always in a directory
-
-your actions are all relative to that directory
 
 ```{r}
 getwd()
 ```
+
+like in Unix, in R you are always in a directory
+
+your actions are all relative to that directory
 
 ## tell R where you would like it to be with
 
@@ -215,11 +251,11 @@ xor(TRUE,FALSE)
 for example, the boolean and numeric values above
 
 ```{r}
-mode(TRUE)
-mode(1)
+class(TRUE)
+class(1)
 ```
 
-do you see us using `mode` to get the type of an object? 
+you could also use `mode` to get the type of an object 
 
 this will mean later, when you try to call `mode` to get the most frequently occurring level of a variable, you will be frustrated and sad
 
@@ -230,11 +266,11 @@ you will likely only ever deal with five flavors of data in R, which are stored 
 ## three data types
 
 ```{r}
-mode(FALSE)
-mode(pi)
-mode("Look mama I'm letters")
-mode(as.Date("2015-07-27"))
-mode(factor(c('undergraduate','graduate','professor','staff')))
+class(FALSE)
+class(pi)
+class("Look mama I'm letters")
+class(as.Date("2015-07-27"))
+class(factor(c('undergraduate','graduate','professor','staff')))
 ```
 
 we've already dealt a lot with numerics above, so let's talk about
