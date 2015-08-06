@@ -215,6 +215,8 @@ dirty[dirty == 999] <- NA
 dirty$enrollment
 ```
 
+> side note - read.table() has an option to specify field values as `NA` as soon as you import the data, but this is a BAAAAD idea because R automatically encodes blank fields as missing too, and thus you lose the ability to distinguish between user-missing and experimenter-missing
+
 ## let's start with the birth order variable
 
 If your spreadsheet software automatically adds commas to long values, R will interpret the whole column as character instead of numeric
