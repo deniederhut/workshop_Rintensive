@@ -5,4 +5,13 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
-# Introduction
+## Introduction
+
+Remember how we said that R started off as a functional language? This means that, underneath the hood, R is built on many small functions that can be grouped together in smart ways to do powerful things. It also means that, if you want to do more complicated things in R than run summary statistics and linear models, you'll need to learn how to create and use functions.
+
+In R, functions are first-class citizens. This means that you can do anything to a function that you can do to an object, including using functions to create other functions.
+
+> side note - while you can use loops in R, the community strongly discourages explicit looping in favor of implicit loop functionals like `Filter` and `lapply`
+
+
+
