@@ -175,7 +175,7 @@ str(dirty)
 
 ## it's usually better to DISABLE R's intuition about data types
 
-unless you already know the data is clean (e.g. you are the one who wrote it)
+unless you already know the data is clean and has no non-factor strings in it (i.e. you are the one who created it)
 
 ```{r}
 dirty <- read.csv('data/dirty.csv',stringsAsFactors = FALSE)
@@ -227,6 +227,8 @@ dirty$birth.order
 
 This is easy to fix, as that large value is illegal anyway (no one has 9000 children)
 
+> side note - this is because `,` is often used to separate values in spreadsheets, so the whole thing gets wrapped in `""` to keep the software from accidentally frame-shifting the entire table
+
 ## that timestamp variable is not in a format R likes
 
 base R doesn't handle time well, so we need to get rid of the time part of the timestamp
@@ -237,18 +239,32 @@ dirty$timestamp <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$timestamp)
 dirty$timestamp[1]
 ```
 
-## the shoe size variable is character because of how half sizes were entered
-
-```{r}
-
-```
-
 ## the height variable is in four different units
 
-we can fix this with a lookup table
+we can fix this with a somewhat complicated loop (since R started as a functional language, there are not easy ways to conditionally modify structures in place)
 
 ```{r}
-
+for (i in seq_along(dirty$height)) {
+  if (grepl("’", dirty$height[i])) { # if in feet and inches
+    nums <- lapply(strsplit(sub('"', "", dirty$height[[i]]), "’"), as.numeric)[[1]]
+    dirty[i, 'height'] <- (nums[[1]] * 12 + nums[[2]]) * 2.5
+  }
+  if (grepl('"', dirty$height[i])) { # if in inches
+    dirty[i, 'height'] <- as.numeric(sub('"', "", dirty$height[i])) * 2.5
+  }
+  if (is.na(as.numeric(dirty$height[i]))) { # if a character string
+    dirty[i, 'height'] <- NA
+  }
+  else {
+    nums <- as.numeric(dirty$height[i])
+    if (nums <= 100 & nums > 3) { # if numeric inches
+      dirty[i, 'height'] <- nums * 2.5 / 100
+    }
+    if (nums > 100) { # if numeric centimeters
+      dirty[i, 'height'] <- nums/100
+    }
+  }
+}
 ```
 
 ## then, you can coerce the data into the types they should be
