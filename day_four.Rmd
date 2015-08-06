@@ -11,7 +11,129 @@ Remember how we said that R started off as a functional language? This means tha
 
 In R, functions are first-class citizens. This means that you can do anything to a function that you can do to an object, including using functions to create other functions.
 
-> side note - while you can use loops in R, the community strongly discourages explicit looping in favor of implicit loop functionals like `Filter` and `lapply`
+> side note - while you can use loops in R, the community strongly discourages explicit looping in favor of implicit loop functionals like `Map` and `lapply`
 
+Structuring a computer language around functions and their methods makes it easily parellelizable in ways that object oriented languages are usually not (for many complicated reasons that we don't have time to talk about). Key components of function-oriented languages are functions that write functions and the ability to map functions to data structures.
 
+Finally, when we talk about the amazing extensibility of R, what we mean is that other people have written useful functions that you can find and download. If R is required in your field, it is likely because there are many functions specific to your field that have been developed in R. We'll close the intensive with a brief introduction to packaging and sharing R functions.
 
+# Functions
+
+## it's really easy to create functions in R
+
+```{r}
+f <- function(x) x + 1
+class(f)
+```
+
+## every function has three parts
+
+every function needs inputs - these are called `arguments` (or, here, formal arguments)
+
+every function has stuff it does, and this stuff is contained in the body
+
+every function has an `environment` that it executes in
+
+```{r}
+formals(f)
+body(f)
+environment(f)
+```
+
+## environments are where the function was defined
+
+see how our function has `R_GlobalEnv` as it's environment? that's because we defined it in the global environment
+
+this means that if you tell a function to look for an `object`, it will look in the global namespace
+
+```{r}
+f <- function(x) x + y
+y <- 1
+f(x = 1)
+```
+
+## it's very common for functions to be declared within another function
+
+```{r}
+y <- 9001
+f <- function(x) {
+  y <- 1
+  g <- function (x) {
+    x + y
+  }
+  g(x)
+}
+f(1)
+```
+
+this is important because it means that functions can be separated from the state of your computer (which is what makes them easy to parallelize)
+
+## functions don't modify your computer state (usually)
+
+an obvious exception is writing/reading from disk, but what we really mean here is that anything created inside the function environment doesn't show up in the global environment
+
+```{r}
+h <- function(){
+  if (!exists('a')) {
+    a <- 1
+  }
+  else {
+    a <- a + 9000
+  }
+  print(a)
+}
+h()
+h()
+```
+
+there are ways to make functions modify global variables, but this is generally not a good idea - anything that needs to go into a function should be in the arguments, and anything that needs to come out of the function should be returned
+
+> side note - R automatically returns the value of the last expression, so there is no need for an explicit `return` statement unless you want to break the function early
+
+a couple of days ago, we were dealing with data that came in several different units of length - let's try writing a function that converts inches to centimeters
+
+```{r}
+in_to_cm <- function(x) x * 2.5
+in_to_cm(69)
+```
+
+that's not juvenile humor - it's actually Dillon's height in inches
+
+what if we want to know how tall we are in meters?
+
+you could do `function(x) x * 2.5 / 100 ` but this would be repeating yourself
+
+then, when you figure out that the conversion factor is really *2.54*, not 2.5, you might update one and forget to update the other
+
+```{r}
+in_to_m <- function(x){
+  in_to_cm(x) / 100
+}
+in_to_m(69)
+```
+
+now, if we go back and update `in_to_cm`, those changes automatically get propogated to `in_to_m`
+
+```{r}
+in_to_cm <- function(x) x * 2.54
+in_to_m(69)
+```
+
+if you were here for the intro to Unix, this idea of small functions combined together should sound awfully familiar
+
+# Functionals
+
+# Closures
+
+# Map, Reduce, and Filter
+
+# Packages
+
+** Real artists ship - Steve Jobs **
+
+# Acknowledgements
+
+## Materials taken from:
+
+[Software Carpentry](https://swcarpentry.github.io/)
+[Hadley Wickham](http://adv-r.had.co.nz/)
