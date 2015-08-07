@@ -5,7 +5,7 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
-# Introduction
+## Introduction
 
 okay, time for the business. 
 
