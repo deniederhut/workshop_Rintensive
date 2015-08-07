@@ -121,11 +121,104 @@ in_to_m(69)
 
 if you were here for the intro to Unix, this idea of small functions combined together should sound awfully familiar
 
+R is a bit quirky in that there is no such thing as an uncontained value, e.g. `4` is really a vector with length of one, and a value of 4 in position 1
+
+```{r}
+69 == c(69)
+```
+
+this means that R automatically broadcasts functions across vectors of any length
+
+```{r}
+heights <- c(69,54,73,82)
+in_to_m(heights)
+```
+
+## this doesn't work with lists
+
+```{r, eval=FALSE}
+heights <- list(69,54,73,82)
+in_to_m(heights)
+```
+
 # Functionals
 
-# Closures
+a functional is a function that takes functions as arguments
 
-# Map, Reduce, and Filter
+## the wrong way to be functional
+
+imagine you want to apply a function to the columns of a dataframe (which is a list!)
+
+you could do something like this:
+
+```{r}
+in_to_m(heights[[1]])
+in_to_m(heights[[2]])
+in_to_m(heights[[3]])
+```
+
+but this is clunky, prone to errors, and can't acommodate changes in your list - if you added another item in the list, you would need to find every place you tried to do this and `cntrl-c` `cntrl-v` a whole bunch of crap
+
+## the right way to be functional
+
+```{r}
+lapply(heights, in_to_m)
+```
+## it's not always smart to name functions
+
+these are called anonymous functions - they aren't actually any different, but you should know they exist
+
+```{r}
+lapply(heights, FUN = function(x) x %/% 12)
+```
+
+## lapply has limits
+
+```{r}
+dat <- read.csv('data/large.csv')
+str(dat)
+lapply(dat, mean)
+```
+
+we *know* there are numbers there - why are the means all missing?
+
+a. we didn't use amelia
+b. `mean` has an argument named `na.rm` that ignores missingness
+
+*and for Hadley knows what reason, the default is FALSE*
+
+but we can't do this
+
+```{r, eval=FALSE}
+lapply(dat, mean(na.rm = TRUE))
+```
+
+## so we use Map
+
+Map is a function similar to those found in other functional languages
+
+```{r, eval=FALSE}
+Map(mean, dat, na.rm=TRUE)
+```
+
+## this can be parallelized
+
+```{r}
+install.packages('parallel')
+library(parallel)
+system.time(Map(median, dat, na.rm=TRUE))
+system.time(mcMap(median, dat, na.rm=TRUE))
+```
+
+so that's not any better, but this is a small dataset
+
+## Map can be combined with other Filter and Reduce
+
+this is a quick, powerful, and parallelizable way to handle data
+
+```{r}
+
+```
 
 # Packages
 
