@@ -5,6 +5,10 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
+```{r, echo=FALSE}
+knitr::opts_knit$set(root.dir = '../')
+```
+
 ## Introduction
 
 okay, time for the business. 
@@ -240,7 +244,7 @@ remember our old friend `summary`? it works on almost everything
 
 ```{r}
 model.1 <- aov(outside.barriers ~ gender, data = dat)
-summary(model)
+summary(model.1)
 ```
 
 that's a little better - but what about post-hoc testing?
@@ -301,7 +305,7 @@ model.1$coefficients[[2]]
 
 ## this is useful if you want to plot residuals
 
-```{r}
+```{r, eval=FALSE}
 dat$residuals <- model.1$residuals
 ```
 

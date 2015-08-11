@@ -5,6 +5,10 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
+```{r, echo=FALSE}
+knitr::opts_knit$set(root.dir = '../')
+```
+
 ## Introduction
 
 Remember how we said that R started off as a functional language? This means that, underneath the hood, R is built on many small functions that can be grouped together in smart ways to do powerful things. It also means that, if you want to do more complicated things in R than run summary statistics and linear models, you'll need to learn how to create and use functions.
@@ -261,7 +265,7 @@ has_devel() # if this returns false, you will be unhappy
 
 we'll use devtools to create the boilerplate for us
 
-```{r}
+```{r, eval=FALSE}
 devtools::create("convertR")
 ```
 
@@ -362,7 +366,7 @@ in_to_m <- function(x){
 
 and now create the documentation with
 
-```{r}
+```{r, eval=FALSE}
 devtools::document('convertR')
 ```
 
@@ -405,7 +409,7 @@ in_to_m <- function(x){
 
 then running:
 
-```{r}
+```{r, eval=FALSE}
 devtools::document('convertR')
 ```
 
@@ -446,7 +450,7 @@ remember .gitignore? there's a similar function for R packages
 
 you can add regex to .Rbuildignore via devtools
 
-```{r}
+```{r, eval=FALSE}
 devtools::use_build_ignore("Rproj", pkg = "convertR")
 ```
 
@@ -486,7 +490,7 @@ this is a bit more involved
 
 first, you'll need to build your package
 
-```{r}
+```{r, eval=FALSE}
 devtools::build('convertR')
 ```
 

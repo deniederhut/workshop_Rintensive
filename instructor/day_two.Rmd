@@ -5,6 +5,10 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
+```{r, echo=FALSE}
+knitr::opts_knit$set(root.dir = '../')
+```
+
 ## Introduction
 
 Today's class will be essentially be split into two components: CRUD operations in R and TIDY data. For more on tidiness in data, see [Hadley Wickham's paper](www.jstatsoft.org/v59/i10/paper). We will also touch on missingness - for an accessible introduction, you can read [this very old and no longer state-of-the-art paper](http://psycnet.apa.org/journals/met/7/2/147/).
@@ -36,13 +40,13 @@ in practice, you will only rarely create dataframes by hand, because creating ta
 they are human-readable and highly interaoperable
 
 ```{r}
-read.table("mydata.csv", sep=',', header = TRUE)
+read.table("data/mydata.csv", sep=',', header = TRUE)
 ```
 
 ## R has convenience wrappers for reading in tables
 
 ```{r}
-read.csv("mydata.csv")
+read.csv("data/mydata.csv")
 ```
 
 note that we are only reading the files by doing this
@@ -50,7 +54,7 @@ note that we are only reading the files by doing this
 ## R also has its own kind of data file
 
 ```{r}
-load("mydata.csv")
+load("data/mydata.Rda")
 ```
 
 the `load` function does actually put the file into memory, and with the name you originally gave it when you saved it
@@ -61,8 +65,7 @@ this is typically a bad thing, and there is currently no easy workaround
 
 if you are exporting data from excel, be sure to export datetimes as strings, as excel does not store dates internally the same way Unix does
 
-```{r}
-# need to create excel file
+```{r, eval=FALSE}
 install.packages("xlsx")
 library(xlsx)
 read.xlsx("data/cpds_excel_new.xlsx")
@@ -70,7 +73,7 @@ read.xlsx("data/cpds_excel_new.xlsx")
 
 ## you can also use R to read in data from proprietary software
 
-```{r}
+```{r, eval=FALSE}
 # examples of these?
 install.packages("foreign")
 library(foreign)
@@ -84,13 +87,16 @@ read.octave()
 ## R has an interface to curl called RCurl
 
 ```{r}
-install.packages('RCurl')
+#install.packages('RCurl')
 library(RCurl)
 ```
 
 ## you can use this to access remote data
 
 ```{r}
+#install.packages("XML")
+library(XML)
+
 link <- "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
 page <- getURL(url = link)
 xmlParse(file = page)
@@ -99,9 +105,6 @@ xmlParse(file = page)
 ## R also has libraries for pulling and parsing web pages
 
 ```{r}
-install.packages("XML")
-library(XML)
-
 link<-"http://clerk.house.gov/evs/2014/ROLL_000.asp"
 readHTMLTable(doc=link, header=T, which=1, stringsAsFactors=F)
 ```
@@ -114,7 +117,7 @@ databases generally come in two flavors, relational and non-relational, which ha
 
 two popular relational databases are SQL (or one of its many flavors)
 
-```{r}
+```{r, eval=FALSE}
 #are there websites that allow you to connect to test servers?
 install.packages("RMySQL")
 library(RMySQL)
@@ -127,7 +130,7 @@ con.exit(dbDisconnect(con))
 
 and postgres
 
-```{r}
+```{r, eval=FALSE}
 install.packages("RPostgreSQL")
 library(RPostgreSQL)
 con <- dbConnect(dbDriver("PostgreSQL"),
@@ -142,7 +145,7 @@ dbDisconnect(con)
 
 a popular non-relational database is MongoDB
 
-```{r}
+```{r, eval=FALSE}
 install.packages("rmongodb")
 library(rmongodb)
 con <- mongo.create(host = localhost, 
@@ -462,7 +465,6 @@ this is usually the default strategy
 amelia is a package that makes a complicated MI approach stupidly easy
 
 ```{r}
-install.packages('Amelia')
 library(Amelia)
 ```
 
@@ -513,10 +515,13 @@ we are basically trying to organize ourselves such that:
 
 ## most tidying can be done with two R packages
 
-```{r}
+```{r, eval=FALSE}
 install.packages('reshape2')
 install.packages('stringr')
 install.packages('plyr')
+```
+
+```{r}
 library(reshape2)
 library(stringr)
 library(plyr)
@@ -525,6 +530,7 @@ library(plyr)
 ## let's grab some data from Pew
 
 ```{r}
+library(foreign)
 pew <- as.data.frame(read.spss("data/pew.sav"))
 religion <- pew[c("q16", "reltrad", "income")]
 rm(pew)
@@ -571,7 +577,8 @@ religion[religion$religion == 'Unaffiliated',]
 
 but raw counts aren't very helpful for religons with widely different population sizes
 
-""""
+# the below was all stolen from Chris, and needs reworking
+
 ## enter plyr
 
 - *plyr* is the go-to package for all your splitting-applying-combining needs
@@ -592,7 +599,7 @@ e) Informative error messages
 - If you want to split a **l**ist, and return results as a **d**ata frame, you use **ld**ply
 
 
-```{r}
+```{r, eval=FALSE}
 # Using the appropriate plyr function (ddply), compute vote percentages for Kerry (pres04==1), Bush (pres04==2), Nader (pres04==3), and others (pres04==9)
 ddply(.data=red.blue, .variables=.(race), .fun=summarize, 
       kerry=length(pres04[pres04==1])/length(pres04)*100, 
@@ -604,7 +611,7 @@ ddply(.data=red.blue, .variables=.(race), .fun=summarize,
 
 Consider the case where we want to calculate vote choice statistics across race from a data.frame, and return them as a list:
 
-```{r}
+```{r, eval=FALSE}
 dlply(.data=red.blue, .variables=.(race), .fun=summarize, 
       kerry=length(pres04[pres04==1])/length(pres04)*100, 
       bush=length(pres04[pres04==2])/length(pres04)*100, 
@@ -620,7 +627,7 @@ dlply(.data=red.blue, .variables=.(race), .fun=summarize,
 
 **transform**: applies a function to a data.frame and adds new vectors (columns) to it
 
-```{r}
+```{r, eval=FALSE}
 # Add a column containing the average age of the race of the individual
 red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
       race.avg.age=mean(x=age9, na.rm=T))
@@ -629,7 +636,7 @@ unique(red.blue.transform$race.avg.age)
 
 Note that **transform** can't do transformations that involve the results of *other* transformations from the same call
 
-```{r}
+```{r, eval=FALSE}
 # Attempt to add new columns that draw on other (but still new) columns
 red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
       race.avg.age=mean(x=age9, na.rm=T),
@@ -638,7 +645,7 @@ red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
 
 For this, we need **mutate**: just like transform, but it executes the commands iteratively so  transformations can be carried out that rely on previous transformations from the same call
 
-```{r}
+```{r, eval=FALSE}
 # Attempt to add new columns that draw on other (but still new) columns
 red.blue.mutate<-ddply(.data=red.blue, .variables=.(race), .fun=mutate,
       race.avg.age=mean(x=age9, na.rm=T),
@@ -649,7 +656,7 @@ unique(red.blue.mutate$race.avg.age.plusone)
 
 Another very useful function is **arrange**, which orders a data frame on the basis of column contents
 
-```{r}
+```{r, eval=FALSE}
 # Arrange by "age9", ascending
 red.blue.age<-plyr::arrange(df=red.blue, age9)
 red.blue.age[1:25, 1:5]

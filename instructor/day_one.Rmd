@@ -5,6 +5,10 @@ date: "July 27, 2015"
 output: pdf_document
 ---
 
+```{r, echo=FALSE}
+knitr::opts_knit$set(root.dir = '../')
+```
+
 ## Introduction
 
 A note to the instructor:
@@ -121,7 +125,7 @@ your actions are all relative to that directory
 
 ## tell R where you would like it to be with
 
-```{r}
+```{r, eval=FALSE}
 setwd("/Users/dillonniederhut/Dropbox/dlab/R-intensive")
 ```
 
