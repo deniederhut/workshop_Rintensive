@@ -241,6 +241,8 @@ dirty$timestamp[1]
 
 ## the height variable is in four different units
 
+> side note - this is a complicated function - changing these line-by-line might be easier
+
 we can fix this with a somewhat complicated loop (since R started as a functional language, there are not easy ways to conditionally modify structures in place)
 
 ```{r}
@@ -267,14 +269,26 @@ for (i in seq_along(dirty$height)) {
 }
 ```
 
+## let's fix some of those department spellings
+
+first, let's make this all lowercase
+
+```{r}
+dirty$department
+dirty$department <- tolower(dirty$department)
+dirty$department <- gsub(' ', '', dirty$department)
+dirty$department[4] <- "geology"
+```
+
 ## then, you can coerce the data into the types they should be
 
 ```{r}
 dirty$timestamp <- as.Date(dirty$timestamp,'%m/%d/%Y')
 dirty$height <- as.numeric(dirty$height)
-dirty$department <- as.factor()
-dirty$enrollment <- as.logical()
+dirty$department <- as.factor(dirty$department)
+dirty$enrollment <- as.factor(dirty$enrollment)
 dirty$birth.order <- as.numeric(dirty$birth.order)
+str(dirty)
 ```
 
 # Subsetting and merging
