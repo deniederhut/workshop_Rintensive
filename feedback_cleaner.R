@@ -124,7 +124,7 @@ dat$department <- factor(dat$department, levels = sort(department.levels))
 
 # type other columns
 dat$hear <- as.factor(dat$hear)
-dat$gender <- as.factor(dat$gender)
+dat$gender <- factor(dat$gender, levels = c("Female/Woman", "Male/Man", "Genderqueer/Gender non-conforming"))
 dat$position <- as.factor(dat$position)
 
 # output
