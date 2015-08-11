@@ -351,6 +351,67 @@ str(my.data[!(my.data$character %in% good.things), ])
 str(my.data$numeric)
 ```
 
+# Merging data frames
+
+## flexibly join dataframes with `merge`
+
+imagine you have two datasets that you want to merge
+
+```{r}
+data.1 <- read.csv('data/merge_practice_1.csv')
+data.2 <- read.csv('data/merge_practice_2.csv')
+str(data.1)
+str(data.2)
+```
+
+sometimes the same people have differet jobs in different locations
+
+you can do an *inner* join using merge
+
+```{r}
+merge(data.1, data.2, by = 'id')
+```
+
+that's no good - we lost half of our people! 
+
+inner joins are mostly used when you **only** want records that appear in both tables
+
+if you want the union, you can use an outer join
+
+```{r}
+merge(data.1, data.2, by = 'id', all = TRUE)
+```
+
+this works basically the same as `join` in SQL
+
+running merges is particularly useful when:
+
+a. your data is tidy; and,
+b. you want to add information with a lookup table
+
+in this case, you can store your lookup table as a dataframe, then merge it
+
+```{r}
+lookup <- read.csv('data/merge_practice_3.csv')
+str(lookup)
+```
+
+this lookup table gives us the population for each location
+
+we can add this to our people table with
+
+```{r}
+merge(data.1, lookup, by = "location")
+```
+
+note that Reno was in our lookup table
+
+```{r}
+lookup[lookup$location == 'Reno', ]
+```
+
+but doesn't show up when we merge - why do you think this is?
+
 # Missingness
 
 there are many reasons why you might have missing data
