@@ -1,12 +1,41 @@
 ---
 title: 'Day Two: Data Munging'
 author: "Dillon Niederhut"
-date: "July 27, 2015"
+date: "August, 19, 2015"
 output: pdf_document
 ---
 
 ```{r, echo=FALSE}
 knitr::opts_knit$set(root.dir = '../')
+```
+
+## Let's review what we learned yesterday
+```{r}
+# using a built-in data 
+data(state)
+
+# class of factors
+state.division         # <Promise>
+length(state.division)                       # how many elements in the object? # should be 50, obviously.
+levels(state.division)                       # how many possible values?
+
+
+# data Frames
+# A data frame is a list of variables 
+# of the same length with unique column names.
+# When you work with data, you want to group your data in a data frame. 
+state <- state.x77                    # rename the state.x77 object as state
+rm(state.x77)                    # and remove the old object
+state                            # shows you the whole dataset. often unnecessary
+
+
+rownames(state)                 # what are the names of columns and rows?
+names(state)                    # NULL! why? check the class of the object
+                                # it is a matrix class object
+
+state <- as.data.frame(state)                    # transform the matrix into a data frame
+state               # looks quite much the same as before, but it's a data frame class now
+
 ```
 
 ## Introduction
@@ -70,6 +99,7 @@ install.packages("xlsx")
 library(xlsx)
 read.xlsx("data/cpds_excel_new.xlsx")
 ```
+But it may be better to save your .xlsx file as a csv. format in Excel first, and then read the csv file into R.
 
 ## you can also use R to read in data from proprietary software
 
@@ -83,6 +113,20 @@ read.octave()
 ```
 
 # data does not need to be in the local filesystem
+
+# read text lines from a connection:
+
+```{r, eval=FALSE}
+RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
+RJ[1:50]    # You now have the entire play of shakespeare's Romeo and Juliet
+            # but you will need some data cleaning to have the text only
+      
+RJ[grep("<title>", RJ, perl=TRUE)]           # show me the line that contains the title of the play
+RJ[grep("<h3>", RJ, perl=T)]                 # show me the first line of each act
+RJ[grep("<h3>", RJ, perl=TRUE)]              # show me the first line of each scene
+```
+
+
 
 ## R has an interface to curl called RCurl
 
@@ -185,11 +229,13 @@ dirty <- read.csv('data/dirty.csv',stringsAsFactors = FALSE)
 str(dirty)
 ```
 
-## let's start by removing the empty rows and columns
+## let's start by removing the empty rows and columns. I also drop the birth.order column.
 
 ```{r}
 tail(dirty)
-dirty <- dirty[1:5,-6]
+dirty <- dirty[1:5,-6]  
+dirty <- dirty[ , -dim(dirty)[2]]     # what did I just do?
+                                      # this is equivalent to dirty <- dirty[, c(1:4)]. Why?
 dim(dirty)
 ```
 
@@ -198,9 +244,8 @@ dim(dirty)
 and you should, if they are uninformative or long
 
 ```{r}
-colnames(dirty)
-colnames(dirty) <- c("timestamp","height","department","enrollment","birth.order")
-colnames(dirty)
+names(dirty)
+names(dirty) <- c("time", "height", "dept", "enroll")
 ```
 
 ## it's common for hand-coded data to have a signifier for subject-missingness 
@@ -214,35 +259,26 @@ dirty$enrollment
 ## you should replace all of these values in your dataframe with R's missingness signifier, `NA`
 
 ```{r}
-dirty[dirty == 999] <- NA
-dirty$enrollment
+table(dirty$enroll)   # 999
+                      # replace it with R's missingness signifier, NA
+dirty$enroll[dirty$enroll=="999"] <- NA
+table(dirty$enroll, useNA = "ifany")
 ```
 
 > side note - read.table() has an option to specify field values as `NA` as soon as you import the data, but this is a BAAAAD idea because R automatically encodes blank fields as missing too, and thus you lose the ability to distinguish between user-missing and experimenter-missing
 
-## let's start with the birth order variable
-
-If your spreadsheet software automatically adds commas to long values, R will interpret the whole column as character instead of numeric
-
-```{r}
-dirty$birth.order
-```
-
-This is easy to fix, as that large value is illegal anyway (no one has 9000 children)
-
-> side note - this is because `,` is often used to separate values in spreadsheets, so the whole thing gets wrapped in `""` to keep the software from accidentally frame-shifting the entire table
 
 ## that timestamp variable is not in a format R likes
 
 base R doesn't handle time well, so we need to get rid of the time part of the timestamp
 
 ```{r}
-dirty$timestamp[1]
-dirty$timestamp <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$timestamp)
-dirty$timestamp[1]
+dirty$time
+dirty$time <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$time)
+dirty$time    # looks good!
 ```
 
-## the height variable is in four different units
+## the height variable is in four different units. not good.
 
 > side note - this is a complicated function - changing these line-by-line might be easier
 
@@ -272,25 +308,44 @@ for (i in seq_along(dirty$height)) {
 }
 ```
 
+> side note: we can do the same task line-by-line, since the number of observations are small.
+
+```{r}
+class(dirty$height)
+as.numeric(dirty$height)
+
+# R reads comma as texts. We need to remove these.
+dirty$height[grep("’", dirty$height, perl=TRUE)] <- 5*30.48 + 9*2.54
+as.numeric(dirty$height)
+
+# if no numeric value, then NA
+dirty$height <- as.numeric(dirty$height)  # warning message! Why?
+
+# recoding the element stored in inch
+dirty$height[2] <- 70*2.54                # anyone knows what the last unit is?
+dirty$height[3] <- 2.1*100                # meter -> centimeter
+```
+
+
 ## let's fix some of those department spellings
 
 first, let's make this all lowercase
 
 ```{r}
-dirty$department
-dirty$department <- tolower(dirty$department)
-dirty$department <- gsub(' ', '', dirty$department)
-dirty$department[4] <- "geology"
+dirty$dept
+dirty$dept <- tolower(dirty$dept)
+dirty$dept <- gsub(' ', '', dirty$dept)  # what did we just do?
+dirty$dept[4] <- "geology"
+dirty[dirty == "999"] <- NA
 ```
 
 ## then, you can coerce the data into the types they should be
 
 ```{r}
-dirty$timestamp <- as.Date(dirty$timestamp,'%m/%d/%Y')
+dirty$time <- as.Date(dirty$time,'%m/%d/%Y')
 dirty$height <- as.numeric(dirty$height)
-dirty$department <- as.factor(dirty$department)
-dirty$enrollment <- as.factor(dirty$enrollment)
-dirty$birth.order <- as.numeric(dirty$birth.order)
+dirty$dept <- as.factor(dirty$dept)
+dirty$enroll <- as.factor(dirty$enroll)
 str(dirty)
 ```
 
@@ -320,6 +375,7 @@ if your vectors are not multiples of each other, R will fuss at you
 
 ```{r}
 c(1,2) >= c(1,2,3)
+c(1,2) >= c(1,2,3,4)     # why no warning this time? R recycles!
 ```
 
 the combination of the length requirement, the lack of support in R for proper indexing, and missingness in your data will cause many headaches later on
