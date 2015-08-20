@@ -577,6 +577,20 @@ religion[religion$religion == 'Unaffiliated',]
 
 but raw counts aren't very helpful for religons with widely different population sizes
 
+## reshaping
+
+```{r}
+abnormal <- data.frame(name = c('Alice','Bob','Eve'),
+                       time1 = c(90,90,150),
+                       time2 = c(100,95,100))
+normal <- melt(data = abnormal, id.vars = 'name')
+normal$id <- seq(1:nrow(normal))
+names(normal) <- c('name','time','value','id')
+normal$time <- str_replace(normal$time,'time','')
+normal[normal$time == 1,]
+normal[normal$name == 'Alice',]
+```
+
 # the below was all stolen from Chris, and needs reworking
 
 ## enter plyr
