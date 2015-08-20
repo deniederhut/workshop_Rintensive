@@ -647,8 +647,6 @@ normal[normal$time == 1,]
 normal[normal$name == 'Alice',]
 ```
 
-# the below was all stolen from Chris, and needs reworking
-
 ## enter plyr
 
 - *plyr* is the go-to package for all your splitting-applying-combining needs
@@ -670,23 +668,15 @@ e) Informative error messages
 
 
 ```{r, eval=FALSE}
-# Using the appropriate plyr function (ddply), compute vote percentages for Kerry (pres04==1), Bush (pres04==2), Nader (pres04==3), and others (pres04==9)
-ddply(.data=red.blue, .variables=.(race), .fun=summarize, 
-      kerry=length(pres04[pres04==1])/length(pres04)*100, 
-      bush=length(pres04[pres04==2])/length(pres04)*100, 
-      nader=length(pres04[pres04==3])/length(pres04)*100, 
-      other=length(pres04[pres04==9])/length(pres04)*100 
-)
-```
-
-Consider the case where we want to calculate vote choice statistics across race from a data.frame, and return them as a list:
-
-```{r, eval=FALSE}
-dlply(.data=red.blue, .variables=.(race), .fun=summarize, 
-      kerry=length(pres04[pres04==1])/length(pres04)*100, 
-      bush=length(pres04[pres04==2])/length(pres04)*100, 
-      nader=length(pres04[pres04==3])/length(pres04)*100, 
-      other=length(pres04[pres04==9])/length(pres04)*100 
+# plyr package
+mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
+# Consider the case where we want to calculate descriptive statistics across admits and not-admits
+# from the dataset and return them as a data.frame
+ddata <- ddply(mydata, c("admit"), summarize, 
+                gpa.over3 = length(gpa[gpa>=3]),
+                gpa.over3.5 = length(gpa[gpa>=3.5]),
+                gpa.over3per = length(gpa[gpa>=3])/length(gpa),
+                gpa.over3.5per = length(gpa[gpa>=3.5])/length(gpa))
 )
 ```
 
@@ -697,48 +687,31 @@ dlply(.data=red.blue, .variables=.(race), .fun=summarize,
 
 **transform**: applies a function to a data.frame and adds new vectors (columns) to it
 
-```{r, eval=FALSE}
-# Add a column containing the average age of the race of the individual
-red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
-      race.avg.age=mean(x=age9, na.rm=T))
-unique(red.blue.transform$race.avg.age)
-```
-
-Note that **transform** can't do transformations that involve the results of *other* transformations from the same call
+# add a column containing the average gre score of students
 
 ```{r, eval=FALSE}
-# Attempt to add new columns that draw on other (but still new) columns
-red.blue.transform<-ddply(.data=red.blue, .variables=.(race), .fun=transform,
-      race.avg.age=mean(x=age9, na.rm=T),
-      race.avg.age.plusone=race.avg.age+1)
+
+mydata <- ddply(mydata, c("admit"), transform, 
+                gre.ave=mean(x=gre, na.rm=T),
+                gre.sd = sd(x=gre, na.rm=T))
+head(mydata)
+unique(mydata$gre.ave)
+)
 ```
 
-For this, we need **mutate**: just like transform, but it executes the commands iteratively so  transformations can be carried out that rely on previous transformations from the same call
-
-```{r, eval=FALSE}
-# Attempt to add new columns that draw on other (but still new) columns
-red.blue.mutate<-ddply(.data=red.blue, .variables=.(race), .fun=mutate,
-      race.avg.age=mean(x=age9, na.rm=T),
-      race.avg.age.plusone=race.avg.age+1)
-unique(red.blue.mutate$race.avg.age)
-unique(red.blue.mutate$race.avg.age.plusone)
-```
+> side note: note that **transform** can't do transformations that involve the results of *other* transformations from the same call
 
 Another very useful function is **arrange**, which orders a data frame on the basis of column contents
 
 ```{r, eval=FALSE}
-# Arrange by "age9", ascending
-red.blue.age<-plyr::arrange(df=red.blue, age9)
-red.blue.age[1:25, 1:5]
-# Arrange by "age9", descending
-red.blue.age<-plyr::arrange(df=red.blue, desc(age9))
-red.blue.age[1:25, 1:5]
-# Arrange by "age9" then "sex"
-red.blue.age.sex<-plyr::arrange(df=red.blue, age9, sex)
-red.blue.age.sex[1:25, 1:5]
-# Arrange by "sex" (descending) then "age9"
-red.blue.sex.age<-plyr::arrange(df=red.blue, desc(sex), age9)
-red.blue.sex.age[1:25, 1:5]
+# Another very useful function is arrange, which orders a data frame on the basis of column contents
+# arrange by "rank"
+mydata.rank <- plyr::arrange(mydata, rank)
+# arrange by "rank", descending
+mydata.rank <- plyr::arrange(mydata, desc(rank))
+# arrange by "rank", then "gre", then "gpa
+mydata.comb <- plyr::arrange(mydata, rank, desc(gre), desc(gpa))
+head(mydata.comb)
 ```
 
 # Acknowledgements
