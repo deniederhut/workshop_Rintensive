@@ -21,6 +21,97 @@ Structuring a computer language around functions and their methods makes it easi
 
 Finally, when we talk about the amazing extensibility of R, what we mean is that other people have written useful functions that you can find and download. If R is required in your field, it is likely because there are many functions specific to your field that have been developed in R. We'll close the intensive with a brief introduction to packaging and sharing R functions.
 
+
+# Looping
+Before we get to understand how functions work and learn how to create functions, let us go over how for-loop works in R. Many functions often have for-loops embedded in them, hence it will be useful to understand looping first. the basic syntax looks like the following:  
+
+syntax: for (variable in sequence) {statement}
+
+```{r}
+## I want to create a matrix of 2 to the power of n where n is 1 to 10.
+
+mat <- c(rep(NA, 10))   # first create a null vector
+
+# There are many ways to do the same task
+mat <- c(rep(NA, 6))
+for(i in 1:6){   # I want to create a matrix of 2 to the power of n where n is 5 to 10.
+  mat[i] <- 2^(i+4)
+}                # or
+
+mat <- c(rep(NA, 6))
+for(i in 5:10){   
+  mat[i-4] <- 2^i
+}                # by setting sequence and statement accordingly
+```
+
+You can also loop over a non-numeric vector
+
+```{r}
+a <- c("Berkeley", "SF", "Oakland")
+b <- c(20, 18, 22)
+city.temp <- data.frame(cbind(a, b))
+
+for(city in c("Berkeley", "Walnut Creek", "Richmond")){
+  if(sum(city==city.temp$a)>0){
+    print(city.temp[which(city==city.temp$a),])   
+    # if we have the city in our data, then print it's temperature and the name of the city
+  }
+  if(sum(city==city.temp$a)==0){
+    print(paste(city, "is NOT in the data. :(", sep=" "))          
+    # if not, then just print the name of the city next to "is Not in the data. :("
+  }
+}   # Loops can be as complicated and long as they could be. Often not so efficient.
+```
+
+How can we make the running time shorter? The "break" command can be handy. We use the command when we want to "end the looping" once the variable reaches where we want it to stop. 
+
+```{r}
+system.time(
+  for(i in 1:1000){
+  print(i)
+  })
+
+system.time(
+  for(i in 1:1000){
+    print(i)
+  if(i == 50) break  
+  })
+```
+
+Next we move on to control structures, such as if statements. ``If" statements are very useful when you want to assign different tasks to different subsets of data using a single for-loop. The basic syntax looks like the following: if(condition){statement} else{other statement}
+
+```{r}
+x <- 7
+if(x > 10){
+  print(x)
+  
+  }else{                     # "else" should not start its own line. 
+                             # Always let it be preceded by a closing brace on the same line.
+  print("NOT BIG ENOUGH!!")
+}
+```
+
+The ``ifelse" function can be handy as long as you have two conditions that are mutually exclusive
+
+```{r}
+# ifelse(test, yes, no)
+gender <- sample(c("male", "female"), 100, replace=TRUE)
+gender
+gender <- ifelse(gender=="male", 1, 0)
+gender
+```
+
+
+``While" loops are used less frequently. The basic syntax: while(condition) {statement}
+
+```{r}
+# if there are multiple statements, then use ; to separate each statement
+x <- 0
+while(x < 5) {print(x <- x+1)}
+x <- 1
+while(x < 5) {x <- x+1; if (x == 3) break; print(x)}  # break the loop when x=3
+```
+
 # Functions
 
 ## it's really easy to create functions in R
@@ -222,6 +313,57 @@ this is a quick, powerful, and parallelizable way to handle data
 
 ```{r}
 
+```
+
+# Exercise using an example of the entire play of shakespeare's Romeo and Juliet
+
+```{r}
+RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
+```
+
+
+> side note: You will need some data cleaning to have the text script only. However, we won't worry about it for now. 
+
+Our job is to create a single list where each component includes a single act. Then count how many times the word "Romeo" and "Juliet" appear in each act. Also calculate the number of lines in each act. How should we proceed?
+
+Take a look at the data and look for some pattern.
+```{r}
+RJ[grep("<title>", RJ, perl=TRUE)]
+RJ[grep("<H3>", RJ, perl=TRUE)]
+RJ[grep("<h3>", RJ, perl=TRUE)]
+```
+
+Now that we know that the first line of each act begins with the string ``<H3>", we will create a null list object called x, and then assign all the lines in each act to each component in x.
+
+```{r}
+x <- list(NA)
+y <- grep("<H3>", RJ, perl=TRUE)
+for(i in 1:length(y)){
+  if(i < length(y)){
+  x[[i]]  <- RJ[c(y[i]:(y[i+1]-1))]
+  }
+  if(i == length(y)){
+    x[[i]]  <- RJ[c(y[i]:length(RJ))]
+  }
+}
+```
+
+How should we count the number of the words appear in each act? Create a wrapper function that counts the number of the words and returns the number.
+
+```{r}
+countR <- function(z){
+  return(c(length(grep("Romeo", z, perl=T)), length(grep("Juliet", z, perl=T)))) 
+}
+lapply(x, countR)
+```
+Now count the lines in each scene
+
+```{r}
+# now count the lines in each scene
+countL <- function(z){
+  return(length(grep("</A><br>$", z, perl=T))) 
+}
+lapply(x, countL)
 ```
 
 # Packages
