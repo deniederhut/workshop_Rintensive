@@ -1,6 +1,6 @@
 ---
 title: 'Day Two: Data Munging'
-author: "Dillon Niederhut"
+author: ["Dillon Niederhut", "Shinhye Choi"]
 date: "August, 19, 2015"
 output: pdf_document
 ---
@@ -9,33 +9,39 @@ output: pdf_document
 knitr::opts_knit$set(root.dir = '../')
 ```
 
-## Let's review what we learned yesterday
+# Review
+
+## Inspecting objects
+
+we'll start by using some data that is already in R
+
 ```{r}
-# using a built-in data 
 data(state)
+str(state)
+```
 
-# class of factors
-state.division         # <Promise>
-length(state.division)                       # how many elements in the object? # should be 50, obviously.
-levels(state.division)                       # how many possible values?
+## Inspecting variables
 
+We should see 50 levels in this division variable
 
-# data Frames
-# A data frame is a list of variables 
-# of the same length with unique column names.
-# When you work with data, you want to group your data in a data frame. 
-state <- state.x77                    # rename the state.x77 object as state
-rm(state.x77)                    # and remove the old object
-state                            # shows you the whole dataset. often unnecessary
+```{r}
+state.division
+length(state.division)
+levels(state.division)
+```
 
+## Inspecting data frames
 
-rownames(state)                 # what are the names of columns and rows?
-names(state)                    # NULL! why? check the class of the object
-                                # it is a matrix class object
+recall, a dataframe is a list of vectors, where each vector is one variable with all of its measurements
 
-state <- as.data.frame(state)                    # transform the matrix into a data frame
-state               # looks quite much the same as before, but it's a data frame class now
+R expects dataframes to be rectangular
 
+```{r}
+state <- state.x77
+rm(state.x77)
+state
+state <- as.data.frame(state) 
+state     
 ```
 
 ## Introduction
@@ -66,7 +72,7 @@ in practice, you will only rarely create dataframes by hand, because creating ta
 
 ## why read data from text files? 
 
-they are human-readable and highly interaoperable
+they are human-readable and highly interoperable
 
 ```{r}
 read.table("data/mydata.csv", sep=',', header = TRUE)
@@ -112,21 +118,7 @@ read.spss()
 read.octave()
 ```
 
-# data does not need to be in the local filesystem
-
-# read text lines from a connection:
-
-```{r, eval=FALSE}
-RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
-RJ[1:50]    # You now have the entire play of shakespeare's Romeo and Juliet
-            # but you will need some data cleaning to have the text only
-      
-RJ[grep("<title>", RJ, perl=TRUE)]           # show me the line that contains the title of the play
-RJ[grep("<h3>", RJ, perl=T)]                 # show me the first line of each act
-RJ[grep("<h3>", RJ, perl=TRUE)]              # show me the first line of each scene
-```
-
-
+# Data does not need to be in the local filesystem
 
 ## R has an interface to curl called RCurl
 
@@ -136,6 +128,22 @@ library(RCurl)
 ```
 
 ## you can use this to access remote data
+
+you may just want to read text lines from a webpage
+
+```{r}
+RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
+RJ[1:50]
+```
+
+and use the kinds of string manipulation we learned yesterday to retrieve the first lines of an act or a scene
+
+```{r}
+RJ[grep("<h3>", RJ, perl=T)]
+RJ[grep("<h3>", RJ, perl=TRUE)]
+```
+
+or maybe pull information out of an RSS feed
 
 ```{r}
 #install.packages("XML")
@@ -259,8 +267,7 @@ dirty$enrollment
 ## you should replace all of these values in your dataframe with R's missingness signifier, `NA`
 
 ```{r}
-table(dirty$enroll)   # 999
-                      # replace it with R's missingness signifier, NA
+table(dirty$enroll)
 dirty$enroll[dirty$enroll=="999"] <- NA
 table(dirty$enroll, useNA = "ifany")
 ```
@@ -275,57 +282,29 @@ base R doesn't handle time well, so we need to get rid of the time part of the t
 ```{r}
 dirty$time
 dirty$time <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$time)
-dirty$time    # looks good!
+dirty$time
 ```
 
-## the height variable is in four different units. not good.
-
-> side note - this is a complicated function - changing these line-by-line might be easier
+## the height variable is in four different units
 
 we can fix this with a somewhat complicated loop (since R started as a functional language, there are not easy ways to conditionally modify structures in place)
 
-```{r}
-for (i in seq_along(dirty$height)) {
-  if (grepl("’", dirty$height[i])) { # if in feet and inches
-    nums <- lapply(strsplit(sub('"', "", dirty$height[[i]]), "’"), as.numeric)[[1]]
-    dirty[i, 'height'] <- (nums[[1]] * 12 + nums[[2]]) * 2.5
-  }
-  if (grepl('"', dirty$height[i])) { # if in inches
-    dirty[i, 'height'] <- as.numeric(sub('"', "", dirty$height[i])) * 2.5
-  }
-  if (is.na(as.numeric(dirty$height[i]))) { # if a character string
-    dirty[i, 'height'] <- NA
-  }
-  else {
-    nums <- as.numeric(dirty$height[i])
-    if (nums <= 100 & nums > 3) { # if numeric inches
-      dirty[i, 'height'] <- nums * 2.5 / 100
-    }
-    if (nums > 100) { # if numeric centimeters
-      dirty[i, 'height'] <- nums/100
-    }
-  }
-}
-```
+OR
 
-> side note: we can do the same task line-by-line, since the number of observations are small.
+we can do the same task line-by-line, since the number of observations is small
 
 ```{r}
 class(dirty$height)
 as.numeric(dirty$height)
-
-# R reads comma as texts. We need to remove these.
-dirty$height[grep("’", dirty$height, perl=TRUE)] <- 5*30.48 + 9*2.54
-as.numeric(dirty$height)
-
-# if no numeric value, then NA
-dirty$height <- as.numeric(dirty$height)  # warning message! Why?
-
-# recoding the element stored in inch
-dirty$height[2] <- 70*2.54                # anyone knows what the last unit is?
-dirty$height[3] <- 2.1*100                # meter -> centimeter
 ```
 
+because there are apostrophes and quotation marks, R thinks these are strings
+
+```{r}
+dirty$height[grep("’", dirty$height, perl=TRUE)] <- 5*30.48 + 9*2.54
+dirty$height[2] <- 70*2.54
+dirty$height[3] <- 2.1*100
+```
 
 ## let's fix some of those department spellings
 
@@ -348,142 +327,6 @@ dirty$dept <- as.factor(dirty$dept)
 dirty$enroll <- as.factor(dirty$enroll)
 str(dirty)
 ```
-
-# Subsetting and merging
-
-## an aside on testing
-
-in R, you use double symbols for testing
-
-```{r}
-1 == 2
-1 != 1
-1 >= 1
-```
-
-(you've already seen a couple of these)
-
-## tests return boolean vectors
-
-```{r}
-1 >= c(0,1,2)
-```
-
-## recall that boolean vectors need to be the same length or a divisor
-
-if your vectors are not multiples of each other, R will fuss at you
-
-```{r}
-c(1,2) >= c(1,2,3)
-c(1,2) >= c(1,2,3,4)     # why no warning this time? R recycles!
-```
-
-the combination of the length requirement, the lack of support in R for proper indexing, and missingness in your data will cause many headaches later on
-
-## subsetting data frames
-
-subsetting your data is where you will use this regularly
-
-```{r}
-my.data$numeric == 2
-my.data[my.data$numeric == 2,]
-```
-
-## boolean variables can act as filters right out of the box
-
-```{r}
-my.data[my.data$b,]
-```
-
-you see the empty space after the comma? that tells R to grab all the columns
-
-## you can also select columns
-
-```{r}
-my.data[,'d']
-```
-
-that empy space **before** the comma? that tells R to grab all the rows
-
-## you can also match elements from a vector
-
-```{r}
-good.things <- c("three", "four", "five")
-my.data[my.data$character %in% good.things, ]
-```
-
-## most subsetting operations on dataframes also return a dataframe
-
-```{r}
-str(my.data[!(my.data$character %in% good.things), ])
-```
-
-## subsets that are a single column return a vector
-
-```{r}
-str(my.data$numeric)
-```
-
-# Merging data frames
-
-## flexibly join dataframes with `merge`
-
-imagine you have two datasets that you want to merge
-
-```{r}
-data.1 <- read.csv('data/merge_practice_1.csv')
-data.2 <- read.csv('data/merge_practice_2.csv')
-str(data.1)
-str(data.2)
-```
-
-sometimes the same people have differet jobs in different locations
-
-you can do an *inner* join using merge
-
-```{r}
-merge(data.1, data.2, by = 'id')
-```
-
-that's no good - we lost half of our people! 
-
-inner joins are mostly used when you **only** want records that appear in both tables
-
-if you want the union, you can use an outer join
-
-```{r}
-merge(data.1, data.2, by = 'id', all = TRUE)
-```
-
-this works basically the same as `join` in SQL
-
-running merges is particularly useful when:
-
-a. your data is tidy; and,
-b. you want to add information with a lookup table
-
-in this case, you can store your lookup table as a dataframe, then merge it
-
-```{r}
-lookup <- read.csv('data/merge_practice_3.csv')
-str(lookup)
-```
-
-this lookup table gives us the population for each location
-
-we can add this to our people table with
-
-```{r}
-merge(data.1, lookup, by = "location")
-```
-
-note that Reno was in our lookup table
-
-```{r}
-lookup[lookup$location == 'Reno', ]
-```
-
-but doesn't show up when we merge - why do you think this is?
 
 # Missingness
 
@@ -569,6 +412,79 @@ we are basically trying to organize ourselves such that:
 1. any grouping is made on rows
 2. any testing is done between columns
 
+## an aside on testing
+
+in R, you use double symbols for testing
+
+```{r}
+1 == 2
+1 != 1
+1 >= 1
+```
+
+(you've already seen a couple of these)
+
+## tests return boolean vectors
+
+```{r}
+1 >= c(0,1,2)
+```
+
+## recall that boolean vectors need to be the same length or a divisor
+
+if your vectors are not multiples of each other, R will fuss at you
+
+```{r}
+c(1,2) >= c(1,2,3)
+c(1,2) >= c(1,2,3,4)     # why no warning this time? R recycles!
+```
+
+the combination of the length requirement, the lack of support in R for proper indexing, and missingness in your data will cause many headaches later on
+
+## subsetting data frames
+
+subsetting your data is where you will use this regularly
+
+```{r}
+my.data$numeric == 2
+my.data[my.data$numeric == 2,]
+```
+
+## boolean variables can act as filters right out of the box
+
+```{r}
+my.data[my.data$b,]
+```
+
+you see the empty space after the comma? that tells R to grab all the columns
+
+## you can also select columns
+
+```{r}
+my.data[,'d']
+```
+
+that empy space **before** the comma? that tells R to grab all the rows
+
+## you can also match elements from a vector
+
+```{r}
+good.things <- c("three", "four", "five")
+my.data[my.data$character %in% good.things, ]
+```
+
+## most subsetting operations on dataframes also return a dataframe
+
+```{r}
+str(my.data[!(my.data$character %in% good.things), ])
+```
+
+## subsets that are a single column return a vector
+
+```{r}
+str(my.data$numeric)
+```
+
 ## most tidying can be done with two R packages
 
 ```{r, eval=FALSE}
@@ -583,7 +499,119 @@ library(stringr)
 library(plyr)
 ```
 
-## let's grab some data from Pew
+## reshaping
+
+our goal here is to arrange our data such that each table is about one kind of thing: whether it is everything about a measurement, everything about a person, or everything about a group of people
+
+```{r}
+abnormal <- data.frame(name = c('Alice','Bob','Eve'),
+                       time1 = c(90,90,150),
+                       time2 = c(100,95,100))
+```
+
+this table is not tidy - why not?
+
+the table is about measurements, but each measurement does not have its own row, and each type of measurement value is represented by more than one column
+
+```{r}
+normal <- melt(data = abnormal, id.vars = 'name')
+normal
+```
+
+we can `melt` this dataframe down into a long format, which makes each row a unique observation, and then clean up the dataframe a bit
+
+```{r}
+normal$id <- seq(1:nrow(normal))
+names(normal) <- c('name','time','value','id')
+normal$time <- str_replace(normal$time,'time','')
+
+```
+
+now that we are in a tidy format, see how easy it is to subset
+
+```{r}
+normal[normal$time == 1,]
+normal[normal$name == 'Alice',]
+```
+
+and test
+
+> side note - don't worry about how this works yet - we'll talk about it tomorrow
+
+```{r}
+t.test(value ~ time, data=normal)
+```
+
+it's easy to combine tidy tables to compare different levels of information simultaneously
+
+# Merging data frames
+
+## flexibly join dataframes with `merge`
+
+imagine you have two datasets that you want to merge
+
+```{r}
+data.1 <- read.csv('data/merge_practice_1.csv')
+data.2 <- read.csv('data/merge_practice_2.csv')
+str(data.1)
+str(data.2)
+```
+
+sometimes the same people have differet jobs in different locations
+
+you can do an *inner* join using merge
+
+```{r}
+merge(data.1, data.2, by = 'id')
+```
+
+that's no good - we lost half of our people! 
+
+inner joins are mostly used when you **only** want records that appear in both tables
+
+if you want the union, you can use an outer join
+
+```{r}
+merge(data.1, data.2, by = 'id', all = TRUE)
+```
+
+this works basically the same as `join` in SQL
+
+running merges is particularly useful when:
+
+a. your data is tidy; and,
+b. you want to add information with a lookup table
+
+in this case, you can store your lookup table as a dataframe, then merge it
+
+```{r}
+lookup <- read.csv('data/merge_practice_3.csv')
+str(lookup)
+```
+
+this lookup table gives us the population for each location
+
+we can add this to our people table with
+
+```{r}
+merge(data.1, lookup, by = "location")
+```
+
+note that Reno was in our lookup table
+
+```{r}
+lookup[lookup$location == 'Reno', ]
+```
+
+but doesn't show up when we merge - why do you think this is?
+
+# Practice
+
+## Grab some data from Pew
+
+and sanitize/tidy it
+
+this will be hard
 
 ```{r}
 library(foreign)
@@ -625,27 +653,17 @@ religion <- count(religion, c("reltrad", "income"))
 names(religion)[1] <- "religion"
 ```
 
-## notice how easy it is to subset now
+# Acknowledgements
 
-```{r}
-religion[religion$religion == 'Unaffiliated',]
-```
+## Materials taken from:
 
-but raw counts aren't very helpful for religons with widely different population sizes
+[Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
 
-## reshaping
+[Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
 
-```{r}
-abnormal <- data.frame(name = c('Alice','Bob','Eve'),
-                       time1 = c(90,90,150),
-                       time2 = c(100,95,100))
-normal <- melt(data = abnormal, id.vars = 'name')
-normal$id <- seq(1:nrow(normal))
-names(normal) <- c('name','time','value','id')
-normal$time <- str_replace(normal$time,'time','')
-normal[normal$time == 1,]
-normal[normal$name == 'Alice',]
-```
+===
+
+The material below was taken from Chris's useful things workshop, and should be retooled for this intensive
 
 ## enter plyr
 
@@ -713,10 +731,3 @@ mydata.rank <- plyr::arrange(mydata, desc(rank))
 mydata.comb <- plyr::arrange(mydata, rank, desc(gre), desc(gpa))
 head(mydata.comb)
 ```
-
-# Acknowledgements
-
-## Materials taken from:
-
-[Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
-[Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
