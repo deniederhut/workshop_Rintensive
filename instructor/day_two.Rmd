@@ -15,9 +15,9 @@ knitr::opts_knit$set(root.dir = '../')
 
 we'll start by using some data that is already in R
 
-```{r}
+```{r, eval=FALSE}
 data(state)
-str(state)
+str(state.x77)
 ```
 
 ## Inspecting variables
@@ -237,13 +237,11 @@ dirty <- read.csv('data/dirty.csv',stringsAsFactors = FALSE)
 str(dirty)
 ```
 
-## let's start by removing the empty rows and columns. I also drop the birth.order column.
+## let's start by removing the empty rows and columns
 
 ```{r}
 tail(dirty)
 dirty <- dirty[1:5,-6]  
-dirty <- dirty[ , -dim(dirty)[2]]     # what did I just do?
-                                      # this is equivalent to dirty <- dirty[, c(1:4)]. Why?
 dim(dirty)
 ```
 
@@ -253,7 +251,7 @@ and you should, if they are uninformative or long
 
 ```{r}
 names(dirty)
-names(dirty) <- c("time", "height", "dept", "enroll")
+names(dirty) <- c("time", "height", "dept", "enroll", "birth.order")
 ```
 
 ## it's common for hand-coded data to have a signifier for subject-missingness 
@@ -325,6 +323,7 @@ dirty$time <- as.Date(dirty$time,'%m/%d/%Y')
 dirty$height <- as.numeric(dirty$height)
 dirty$dept <- as.factor(dirty$dept)
 dirty$enroll <- as.factor(dirty$enroll)
+dirty$birth.order <- as.numeric(dirty$birth.order)
 str(dirty)
 ```
 
