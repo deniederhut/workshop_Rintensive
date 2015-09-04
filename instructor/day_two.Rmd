@@ -145,7 +145,7 @@ RJ[grep("<h3>", RJ, perl=TRUE)]
 
 or maybe pull information out of an RSS feed
 
-```{r}
+```{r, eval=FALSE}
 #install.packages("XML")
 library(XML)
 
