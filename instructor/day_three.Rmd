@@ -381,6 +381,18 @@ chisq.test(dat$gender, dat$department)
 
 surprising no one, it is not
 
+# Practice
+
+## Assignment
+
+There were a lot of variables in this dataset that we did not look at today:
+
+```{r}
+names(data)
+```
+
+Choose two of those variables, and explore their distribution and relationship to each other. Can you conclude anything about the D-Lab based on the feedback?
+
 # Acknowledgements
 
 ## Materials taken from:
