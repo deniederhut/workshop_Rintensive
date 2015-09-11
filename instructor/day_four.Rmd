@@ -66,7 +66,7 @@ for(city in c("Berkeley", "Walnut Creek", "Richmond")){
 
 How can we make the running time shorter? The "break" command can be handy. We use the command when we want to "end the looping" once the variable reaches where we want it to stop. 
 
-```{r}
+```{r, eval=FALSE}
 system.time(
   for(i in 1:1000){
   print(i)
@@ -105,7 +105,7 @@ gender
 
 ``While" loops are used less frequently. The basic syntax: while(condition) {statement}
 
-```{r}
+```{r, eval=FALSE}
 # if there are multiple statements, then use ; to separate each statement
 x <- 0
 while(x < 5) {print(x <- x+1)}
