@@ -1,5 +1,5 @@
 ---
-title: "day_three"
+title: "Day Three: Data Analysis"
 author: "Dillon Niederhut"
 date: "July 27, 2015"
 output: pdf_document

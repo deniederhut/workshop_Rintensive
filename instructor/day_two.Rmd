@@ -1,5 +1,5 @@
 ---
-title: 'Day Two: Data Munging'
+title: 'Day Two: Data Cleaning'
 author: ["Dillon Niederhut", "Shinhye Choi"]
 date: "August, 19, 2015"
 output: pdf_document
