@@ -309,57 +309,6 @@ system.time(mcMap(median, dat, na.rm=TRUE))
 
 so that's not any better, but this is a small dataset
 
-# Exercise using an example of the entire play of shakespeare's Romeo and Juliet
-
-```{r}
-RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
-```
-
-> side note: You will need some data cleaning to have the text script only. However, we won't worry about it for now. 
-
-Our job is to create a single list where each component includes a single act. Then count how many times the word "Romeo" and "Juliet" appear in each act. Also calculate the number of lines in each act. How should we proceed?
-
-Take a look at the data and look for some pattern.
-
-```{r}
-RJ[grep("<title>", RJ, perl=TRUE)]
-RJ[grep("<H3>", RJ, perl=TRUE)]
-RJ[grep("<h3>", RJ, perl=TRUE)]
-```
-
-Now that we know that the first line of each act begins with the string ``<H3>", we will create a null list object called x, and then assign all the lines in each act to each component in x.
-
-```{r}
-x <- list(NA)
-y <- grep("<H3>", RJ, perl=TRUE)
-for(i in 1:length(y)){
-  if(i < length(y)){
-  x[[i]]  <- RJ[c(y[i]:(y[i+1]-1))]
-  }
-  if(i == length(y)){
-    x[[i]]  <- RJ[c(y[i]:length(RJ))]
-  }
-}
-```
-
-How should we count the number of the words appear in each act? Create a wrapper function that counts the number of the words and returns the number.
-
-```{r}
-countR <- function(z){
-  return(c(length(grep("Romeo", z, perl=T)), length(grep("Juliet", z, perl=T)))) 
-}
-lapply(x, countR)
-```
-Now count the lines in each scene
-
-```{r}
-# now count the lines in each scene
-countL <- function(z){
-  return(length(grep("</A><br>$", z, perl=T))) 
-}
-lapply(x, countL)
-```
-
 # Packages
 
 ** Real artists ship - Steve Jobs **
@@ -638,6 +587,63 @@ in the comments, you should include:
 
 1. the environments you checked on
 2. the results of `devtools::check()`, with an explanation for any errors
+
+
+# Practice
+
+## Assignment
+
+Remember how we read lines from an html document of Romeo and Juliet on day two? 
+
+```{r}
+RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
+```
+
+Write functions to parse this document into acts, then count the number of times the words "Romeo" and "Juliet" appear in each act. Then, package these functions.
+
+## Example code
+
+Take a look at the data and look for some pattern.
+
+```{r}
+RJ[grep("<title>", RJ, perl=TRUE)]
+RJ[grep("<H3>", RJ, perl=TRUE)]
+RJ[grep("<h3>", RJ, perl=TRUE)]
+```
+
+Now that we know that the first line of each act begins with the string ``<H3>", we will create a null list object called x, and then assign all the lines in each act to each component in x.
+
+```{r}
+x <- list(NA)
+y <- grep("<H3>", RJ, perl=TRUE)
+for(i in 1:length(y)){
+  if(i < length(y)){
+  x[[i]]  <- RJ[c(y[i]:(y[i+1]-1))]
+  }
+  if(i == length(y)){
+    x[[i]]  <- RJ[c(y[i]:length(RJ))]
+  }
+}
+```
+
+How should we count the number of the words appear in each act? Create a wrapper function that counts the number of the words and returns the number.
+
+```{r}
+countR <- function(z){
+  return(c(length(grep("Romeo", z, perl=T)), length(grep("Juliet", z, perl=T)))) 
+}
+lapply(x, countR)
+```
+
+Now count the lines in each scene
+
+```{r}
+# now count the lines in each scene
+countL <- function(z){
+  return(length(grep("</A><br>$", z, perl=T))) 
+}
+lapply(x, countL)
+```
 
 # Acknowledgements
 
