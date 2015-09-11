@@ -1,6 +1,6 @@
 ---
 title: "day_four"
-author: "Dillon Niederhut"
+author: ["Dillon Niederhut", "Shinhye Choi"]
 date: "July 27, 2015"
 output: pdf_document
 ---
@@ -23,6 +23,7 @@ Finally, when we talk about the amazing extensibility of R, what we mean is that
 
 
 # Looping
+
 Before we get to understand how functions work and learn how to create functions, let us go over how for-loop works in R. Many functions often have for-loops embedded in them, hence it will be useful to understand looping first. the basic syntax looks like the following:  
 
 syntax: for (variable in sequence) {statement}
@@ -259,6 +260,7 @@ but this is clunky, prone to errors, and can't acommodate changes in your list -
 ```{r}
 lapply(heights, in_to_m)
 ```
+
 ## it's not always smart to name functions
 
 these are called anonymous functions - they aren't actually any different, but you should know they exist
@@ -307,26 +309,18 @@ system.time(mcMap(median, dat, na.rm=TRUE))
 
 so that's not any better, but this is a small dataset
 
-## Map can be combined with other Filter and Reduce
-
-this is a quick, powerful, and parallelizable way to handle data
-
-```{r}
-
-```
-
 # Exercise using an example of the entire play of shakespeare's Romeo and Juliet
 
 ```{r}
 RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
 ```
 
-
 > side note: You will need some data cleaning to have the text script only. However, we won't worry about it for now. 
 
 Our job is to create a single list where each component includes a single act. Then count how many times the word "Romeo" and "Juliet" appear in each act. Also calculate the number of lines in each act. How should we proceed?
 
 Take a look at the data and look for some pattern.
+
 ```{r}
 RJ[grep("<title>", RJ, perl=TRUE)]
 RJ[grep("<H3>", RJ, perl=TRUE)]
@@ -650,5 +644,7 @@ in the comments, you should include:
 ## Materials taken from:
 
 [Software Carpentry](https://swcarpentry.github.io/)
+
 [Hadley Wickham](http://adv-r.had.co.nz/)
+
 [more Hadley Wickham](http://r-pkgs.had.co.nz/)
