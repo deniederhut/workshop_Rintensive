@@ -39,9 +39,8 @@ R expects dataframes to be rectangular
 ```{r}
 state <- state.x77
 rm(state.x77)
-state
 state <- as.data.frame(state) 
-state     
+head(state)     
 ```
 
 ## Introduction
@@ -125,6 +124,8 @@ read.octave()
 ```{r}
 #install.packages('RCurl')
 library(RCurl)
+#install.packages("XML")
+library(XML)
 ```
 
 ## you can use this to access remote data
@@ -133,7 +134,7 @@ you may just want to read text lines from a webpage
 
 ```{r}
 RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
-RJ[1:50]
+RJ[1:25]
 ```
 
 and use the kinds of string manipulation we learned yesterday to retrieve the first lines of an act or a scene
@@ -146,9 +147,6 @@ RJ[grep("<h3>", RJ, perl=TRUE)]
 or maybe pull information out of an RSS feed
 
 ```{r, eval=FALSE}
-#install.packages("XML")
-library(XML)
-
 link <- "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
 page <- getURL(url = link)
 xmlParse(file = page)
@@ -158,7 +156,7 @@ xmlParse(file = page)
 
 ```{r}
 link<-"http://clerk.house.gov/evs/2014/ROLL_000.asp"
-readHTMLTable(doc=link, header=T, which=1, stringsAsFactors=F)
+readHTMLTable(doc=link, header=T, which=1, stringsAsFactors=F)[1:10, ]
 ```
 
 # Connecting to a database
