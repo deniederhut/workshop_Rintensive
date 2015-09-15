@@ -65,7 +65,7 @@ remember, you can learn about dataframes with
 str(my.data)
 ```
 
-in practice, you will only rarely create dataframes by hand, because creating tables in a text editor (or heaven forbid a command line) sucks
+in practice, you will only rarely create dataframes by hand, because creating tables in a text editor is both boring and prone to error
 
 # Reading dataframes from file
 
@@ -333,7 +333,7 @@ there are many reasons why you might have missing data
 
 deleting those observations is wasteful, but easy (listwise deletion)
 
-ignoring the individual missing data points is not bad (casewise deletion)
+ignoring the individual missing data points is typical (casewise deletion)
 
 imputing mean values for missing data is possibly the worst thing you can do
 
@@ -358,7 +358,7 @@ this is usually the default strategy
 
 ## remember how we talked about the extensibility of R?
 
-amelia is a package that makes a complicated MI approach stupidly easy
+amelia is a package that makes a complicated MI approach work without you knowing anything about its implementation
 
 ```{r}
 library(Amelia)
@@ -482,7 +482,9 @@ str(my.data[!(my.data$character %in% good.things), ])
 str(my.data$numeric)
 ```
 
-## most tidying can be done with two R packages
+## most tidying can be done with two R packages 
+
+(plus a wrapper around the base string functions)
 
 ```{r, eval=FALSE}
 install.packages('reshape2')

@@ -15,16 +15,16 @@ Remember how we said that R started off as a functional language? This means tha
 
 In R, functions are first-class citizens. This means that you can do anything to a function that you can do to an object, including using functions to create other functions.
 
-> side note - while you can use loops in R, the community strongly discourages explicit looping in favor of implicit loop functionals like `Map` and `lapply`
-
 Structuring a computer language around functions and their methods makes it easily parellelizable in ways that object oriented languages are usually not (for many complicated reasons that we don't have time to talk about). Key components of function-oriented languages are functions that write functions and the ability to map functions to data structures.
 
 Finally, when we talk about the amazing extensibility of R, what we mean is that other people have written useful functions that you can find and download. If R is required in your field, it is likely because there are many functions specific to your field that have been developed in R. We'll close the intensive with a brief introduction to packaging and sharing R functions.
 
-
 # Looping
 
 Before we get to understand how functions work and learn how to create functions, let us go over how for-loop works in R. Many functions often have for-loops embedded in them, hence it will be useful to understand looping first. the basic syntax looks like the following:  
+
+> side note - while you can use loops in R, the community strongly discourages explicit looping in favor of implicit loop functionals like `Map` and `lapply`
+
 
 syntax: for (variable in sequence) {statement}
 
@@ -549,7 +549,7 @@ before you ship your code anywhere, you should check it to make sure it works th
 
 ideally, you will have been doing this with unit testing all along, but that's beyond the scope of this class
 
-```{r}
+```{r, eval=FALSE}
 devtools::check("convertR")
 ```
 

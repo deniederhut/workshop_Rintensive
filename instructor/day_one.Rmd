@@ -29,15 +29,15 @@ It may also be helpful to start off with a little bit of background knowledge ab
 1. Compile a whole program in C or FORTRAN; or,
 2. Do the math yourself with a pencil and a piece of paper
 
-Obviously, both of these options suck, but they both suck for precisely the same reasons; they require lots of human time, and those humans have to be very knowledgeable about the mathematical principles underlying statistical computation (e.g. that even simple functions have multiple implementations to balance accuracy/efficiency for different input values).
+Obviously, neither of these is optimal, but what might not be obvious is that they both share the same problems; they require lots of human time, and those humans have to be very knowledgeable about the mathematical principles underlying statistical computation (e.g. that even simple functions have multiple implementations to balance accuracy/efficiency for different input values).
 
 The good news is that very complicated processes like logistic regression are a single command in R. The bad news is that R is typically not concerned with being logical or conistent. If you find yourself wanting to tear your hair out, this is **normal**. 
 
 # Object Oriented Programming
 
-In the grand scheme of computer software, object orientation is a way of organizing code such that it is easy to update without breaking. This means grouping functions that serve a similar purpose into hierarchies, which is a confusing and abstract way to think about things.
+In the grand scheme of computer software, object orientation is a way of organizing code such that it is easy to update without breaking. This means grouping functions that serve a similar purpose into hierarchies. However, stating it this way is confusing and abstract.
 
-You can think about it this way: a soccer ball is an object. So is a basketball. They share a lot of things in common. It's simpler to know that balls generaly bounce than to explicitly declare for every object I have ever seen in my entire life whether it bounces or not. I can't bounce you, for example, but you didn't need to tell me that when I met you. If I came to believe that people were bounce-able, I would update my idea of people generally, not every person specifically. 
+You can think about it this way: a soccer ball is an object. So is a basketball. They share a lot of things in common. It's simpler to know that balls generaly bounce than to explicitly declare for every ball I ever see in my entire life whether it bounces or not. I can't bounce you, for example, but you didn't need to tell me that when I met you. If I came to believe that people were bounce-able, I would update my idea of people generally, not every person specifically. 
 
 We call things like you and basketball `objects`, and they are in `classes` like human and ball. If I want to create a new object, like a football, I don't have to declare every single thing there is to know about footballs. I can say it `inherits` `attributes` from the `class` ball, except that it's an oblate spheroid instead of a sphere. Easy.
 
@@ -107,7 +107,7 @@ this means that R doesn't know that some things are objects, because they predat
 is.object(sum)
 ```
 
-most of R uses what are called S3 methods, which have no rules except be easy to use. this can make them wildly inconsistent, even to the point where a single function will have multiple sets of rules for how it can be called (you'll see this in a couple of days).
+most of R uses what are called S3 methods, which have no rules except be easy to use. this can make them wildly inconsistent, even to the point where a single function will have multiple sets of rules for how it can be called (you'll see this in day 3).
 
 > as a side note, there is also no agreement about how to name things, so you'll likely see a mixture of snake_case and CamelCase, based on the preferences of the person who originally wrote the function
 
@@ -126,7 +126,7 @@ your actions are all relative to that directory
 ## tell R where you would like it to be with
 
 ```{r, eval=FALSE}
-setwd("/Users/dillonniederhut/Dropbox/dlab/R-intensive")
+setwd("/Users/dillonniederhut/Dropbox/dlab/R-for-Data-Science")
 ```
 
 ## find out what's in your directory with
@@ -137,7 +137,7 @@ dir()
 
 ## find out what's in your environment with
 
-in R, you are always in an environment (more on scoping later)
+in R, you are always in an environment (more on scoping in day 4)
 
 ```{r}
 ls()
@@ -199,7 +199,7 @@ library(Amelia)
 
 note that when you are installing something, you give R a bunch of letters to search CRAN for, which is why it's in quotes
 
-but when you pull it into your environment, you are calling a function on a variable name, which is why it isn't in quotes
+but when you pull it into your environment, you are calling a function on a `name`, which is why it isn't in quotes
 
 ## if you try to call `library` on package that you haven't downloaded, R will fuss at you
 
@@ -263,7 +263,7 @@ you could also use `mode` to get the type of an object
 
 this will mean later, when you try to call `mode` to get the most frequently occurring level of a variable, you will be frustrated and sad
 
-don't hate the messenger
+don't dislike the messenger
 
 you will likely only ever deal with five flavors of data in R, which are stored as 
 
@@ -291,6 +291,10 @@ TRUE * TRUE
 ```
 
 this can make it easy to use if/then statements, as `if x` evaluates to `TRUE` if it is anything other than zero
+
+```{r}
+if (9001) print('This is evaluated as a boolean value')
+```
 
 also, any vector (we'll talk about these below) multiplied by a boolean vector has all of its false values set to zero, which can be helpful for summing and average only specific cases
 
@@ -373,7 +377,7 @@ this can cause issues when making plots or trying to display in a particular ord
 ## try giving your factor explicitly numeric levels and character labels
 
 ```{r}
-my.factor <- factor(c(1,2,3,4), levels=c('undergraduate','graduate','professor','staff'))
+my.factor <- factor(c(1,2,3,4), labels=c('undergraduate','graduate','professor','staff'))
 levels(my.factor)
 ```
 

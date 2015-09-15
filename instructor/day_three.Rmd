@@ -11,14 +11,12 @@ knitr::opts_knit$set(root.dir = '../')
 
 ## Introduction
 
-okay, time for the business. 
-
-analysis here is going to procede in two steps:
+analysis generally procedes in two steps:
 
 1. exploratory data analysis
 2. statistical inference
 
-our treatment of graphing owes a lot to the Grammar of Graphics, 
+our treatment of graphing owes a lot to the Grammar of Graphics 
 
 # Summarizing
 
@@ -36,7 +34,7 @@ summary(dat)
 table(dat$department)
 ```
 
-think back to yesterday - how would we make weekdays out of the date variable?
+think back to day one - how would we make weekdays out of the date variable?
 
 ```{r}
 dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
@@ -55,7 +53,7 @@ dcast(melt(dat, measure.vars = c('course.delivered')), wday ~ 'Delivered', fun.a
 
 # Plotting
 
-## every time you use `base::plot`, Edward Tufte kills a kitten
+## every time you use `base::plot`, [Edward Tufte does something unkind to a cute animal](http://markandrewgoetz.com/blog/2009/11/my-new-wallpaper/)
 
 - we'll be using ggplot, R's implementation of the **grammar of graphics**
 
@@ -183,7 +181,7 @@ the general point here is that every single object on this graph is customizable
 
 frequent customizations are very simple to add
 
-infrequent customizations will take a lot of tinkering your part
+infrequent customizations will take a lot of tinkering on your part
 
 ## facetting
 
@@ -220,7 +218,7 @@ how would you find this out for yourself?
 t.test(dat$outside.barriers[dat$gender == "Male/Man"], dat$outside.barriers[dat$gender == "Female/Woman"])
 ```
 
-remember all that 'different kinds of objects have different methods' crap?
+recall that we mentioned inconsistency on day one - here it is, and in a big way
 
 ## t.test with S3 method
 
@@ -232,7 +230,9 @@ t.test(outside.barriers ~ gender, data = dat, subset = dat$gender %in% c("Male/M
 
 first, you would think anova would be called by `anova`, but that's reserved for conducting F-tests on lm objects
 
-second, you really shouldn't be using anova in the first place, but if you must, the syntax looks like this
+second, you really shouldn't be using anova, but if you must do it in R, the syntax looks like this
+
+> side note - ANOVA was invented by Ron Fisher to make it easy to do linear models with only a pencil and paper, and has been superceded by regression since the advent of computation in the 70s
 
 ```{r}
 aov(outside.barriers ~ gender, data = dat)
@@ -255,7 +255,7 @@ TukeyHSD(model.1)
 
 # linear models
 
-mean tests are really just a subset of linear models where one of your variables is a category
+mean tests are really just a subset of linear models where your predictor is a category
 
 ## cor.test (Pearson)
  
@@ -309,7 +309,7 @@ model.1$coefficients[[2]]
 dat$residuals <- model.1$residuals
 ```
 
-wait crap! remember how we talked about R having casewise deletion + crappy indexing? this is where it hurts
+oh boy golly gee gosh darn! remember how we talked about R having casewise deletion + bad indexing? this is one place where it makes your life difficult
 
 we have to do something like this:
 
@@ -341,7 +341,7 @@ above we were looking at correlations between Likert variables
 
 all Likerts are really rank variables, which means they don't act like actual number-y numbers
 
-in the real world, an 6 foot tall person is twice as tall as a 3 foot tall person
+in the real world, a 6 foot tall person is twice as tall as a 3 foot tall person
 
 but is a level '6' really twice as many barriers to access as a '3'?
 
@@ -378,8 +378,6 @@ i.e. what if we want to know if gender is distributed evenly over departments?
 ```{r}
 chisq.test(dat$gender, dat$department)
 ```
-
-surprising no one, it is not
 
 # Practice
 
