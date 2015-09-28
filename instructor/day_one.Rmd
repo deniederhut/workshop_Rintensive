@@ -377,7 +377,9 @@ this can cause issues when making plots or trying to display in a particular ord
 ## try giving your factor explicitly numeric levels and character labels
 
 ```{r}
-my.factor <- factor(c(1,2,3,4), labels=c('undergraduate','graduate','professor','staff'))
+my.factor <- factor(c(1,2,3,4), 
+                    levels=c(1,2,3,4), 
+                    labels=c('undergraduate','graduate','professor','staff'))
 levels(my.factor)
 ```
 
