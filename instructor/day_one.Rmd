@@ -18,7 +18,7 @@ You should start by having your class go to our github page at [github.com/dlab-
 
 The students won't need these materials today, but they will for the rest of the workshop. While everything is downloading, you can go on to:
 
-## Introduction
+## Introduction to the class
 
 > side note - these materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
 
@@ -30,6 +30,8 @@ It is a good idea to start off the class by asking folks why they want to learn 
 4. I have a deep and burning desire for open and reproducible research
 
 The outline below is designed to give each of these kinds of students the tools they need to get what they want out of R while avoiding common pitfalls. As the instructor, you should draw on your own experience to include further examples and advice, especially for students who do not fall into one of the four categories above.
+
+## Introduction to R
 
 It may also be helpful to start off with a little bit of background knowledge about R. I find that explicitly informing students about the design principles of a language is a quick way to bootstrap their intuitions about how to use that language. R, for example, is a very old language whose objective was to allow scientists to quickly and interactively conduct statistical tests when the only other options at the time were:
 
