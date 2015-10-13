@@ -9,11 +9,18 @@ output: pdf_document
 knitr::opts_knit$set(root.dir = '../')
 ```
 
+## Pre-introduction
+
+You should start by having your class go to our github page at [github.com/dlab-berkeley/R-for-Data-Science](github.com/dlab-berkeley/R-for-Data-Science) to get the course materials either via:
+
+1. `git clone https://github.com/dlab-berkeley/R-for-Data-Science.git`; or
+2. clicking the 'download zip` button on the right hand side of the screen
+
+The students won't need these materials today, but they will for the rest of the workshop. While everything is downloading, you can go on to:
+
 ## Introduction
 
-A note to the instructor:
-
-These materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+> side note - these materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
 
 It is a good idea to start off the class by asking folks why they want to learn R. Common responses include:
 
