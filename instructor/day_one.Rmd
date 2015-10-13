@@ -286,6 +286,8 @@ class(as.Date("2015-07-27"))
 class(factor(c('undergraduate','graduate','professor','staff')))
 ```
 
+> side note - by default, R stores everything as doubles (64 bit floating point numbers) which makes R very memory hungry. You can force it use an integer type with the `L` operator, like: `class(1L) ==` `r class(1L)`
+
 we've already dealt a lot with numerics above, so let's talk about
 
 # Boolean data
