@@ -656,7 +656,7 @@ names(religion)[1] <- "religion"
 
 [Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
 
-[Hadley Wickham](www.jstatsoft.org/v59/i10/paper)
+[Hadley Wickham](http://www.jstatsoft.org/v59/i10/paper)
 
 ===
 
