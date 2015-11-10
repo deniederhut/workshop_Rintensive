@@ -264,6 +264,8 @@ that's a little better - but what about post-hoc testing?
 TukeyHSD(model.1)
 ```
 
+> side note - apparently Stata stores all of the models that you generate, whether you assign them names or not; in R, you must explicitly give your models names or they will disappear into the ether
+
 # linear models
 
 mean tests are really just a subset of linear models where your predictor is a category
