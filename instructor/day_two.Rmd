@@ -77,6 +77,8 @@ they are human-readable and highly interoperable
 read.table("data/mydata.csv", sep=',', header = TRUE)
 ```
 
+> side note - anyone who is 100% new to computing will have a hard time understanding the concept of a working directory, and will try to run this code from their home directory (spoiler alert - it doesn't work)
+
 ## R has convenience wrappers for reading in tables
 
 ```{r}
