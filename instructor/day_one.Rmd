@@ -50,6 +50,8 @@ You can think about it this way: a soccer ball is an object. So is a basketball.
 
 We call things like you and basketball `objects`, and they are in `classes` like human and ball. If I want to create a new object, like a football, I don't have to declare every single thing there is to know about footballs. I can say it `inherits` `attributes` from the `class` ball, except that it's an oblate spheroid instead of a sphere. Easy.
 
+> side note - if you are coming from C++ or Java, be warned that objects in R do not have methods that are accessible with dot notation (in fact, the `.` is used just like `_`)
+
 ## everything in R is an object
 
 yes, even the commands, just watch
