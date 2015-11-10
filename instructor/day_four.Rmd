@@ -81,6 +81,8 @@ system.time(
 
 Next we move on to control structures, such as if statements. ``If" statements are very useful when you want to assign different tasks to different subsets of data using a single for-loop. The basic syntax looks like the following: if(condition){statement} else{other statement}
 
+> side note - there is no `elseif` or `elif` keyword in R, which will be confusing to folks coming from Matlab and Python
+
 ```{r}
 x <- 7
 if(x > 10){
