@@ -9,6 +9,17 @@ output: pdf_document
 knitr::opts_knit$set(root.dir = '../')
 ```
 
+## Pre-introduction
+
+While everyone is getting situated and/or cloning the course materials, pull up `feedback_cleaner.R`. As a review of day 3, walk through the different parts of the script, and ask the students to describe to you what each piece does. For example, 
+
+```
+dat$timestamp <- sub(' [0-9]+:[0-9]+:[0-9]+', '', dat$timestamp)
+dat$timestamp <- as.Date(dat$timestamp, "%m/%d/%Y")
+```
+
+is code that reformats ISO timestamps so that R can read them as date-type values.
+
 ## Introduction
 
 analysis generally procedes in two steps:
