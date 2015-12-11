@@ -512,6 +512,78 @@ lookup[lookup$location == 'Reno', ]
 
 but doesn't show up when we merge - why do you think this is?
 
+# Transforming data
+
+## introduction
+
+because R started out as a functional language, it can be hard to modify data, especially in place
+
+in practice, if you want 100% control over how your frames are being modified, you'll be writing lots of `for` loops, which is messy
+
+luckily, there is a package that handles the common tasks for you
+
+```{r}
+library(dplyr)
+```
+
+## sort data with `arranage`
+
+base R syntax for sorting is a bit of a pain in that you have to create a sorting vector based on the values in a column, then subset the same dataframe and apply the sorting vector to the rows slice
+
+to demonstrate this, let's start by making a toy data frame
+
+```{r}
+toy <- data.frame(
+  id = c(1,1,1,2,2,2,3,3,3),
+  score.1 = c(90,94,40,80,80,80,76,80,82)
+)
+arrange(toy, score.1)
+```
+
+## select rows by pattern with `select`
+
+it's common for variables that measure similar things to have similar names, but selecting columns this was in base R requires running `grepl` on column names, then subsetting the dataframe and applying the logical vector to the column field
+
+```{r}
+toy$score.2 <- 100
+select(toy, score.1, score.2)
+select(toy, contains('score'))
+```
+
+## apply summary fucntions with `summarise`
+
+dplyr includes most of the base R summary statistics, along with:
+
+* `n()`
+* `n_distinct()`
+* `first()`
+* `last()`
+
+```{r}
+summarise(toy, n(), n_distinct(score.1), last(score.1))
+```
+
+## dplyr allows you to apply functions to groups
+
+so far, these have taken base R functions and made them faster (with C++ calls behind the scenes), easier to use, or both
+
+dplyr's real utility is in its grouped dataframes, which apply dplyr functions groupwise
+
+```{r}
+group_by(toy, id)
+summarise(group_by(toy, id), n(), n_distinct(score.1))
+```
+
+you can add as many functions as you want inbetween, but wrapping function call around function call can be hard to read (and write!)
+
+## you can pipe functions with the `%>%` operator
+
+this will look very familiar if you are used to working in bash
+
+```{r}
+toy %>% group_by(id) %>% summarise(n(), n_distinct(score.1))
+```
+
 # Practice
 
 ## Grab some data from Pew
