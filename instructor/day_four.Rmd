@@ -302,14 +302,16 @@ Map(mean, dat, na.rm=TRUE)
 
 ## this can be parallelized
 
+> side note - previous versions of these materials imported the `parallel` library, which is no longer supported as of R versions >= 3.2
+
 ```{r}
-install.packages('parallel')
-library(parallel)
+install.packages('parallelMap')
+library(parallelMap)
 system.time(Map(median, dat, na.rm=TRUE))
-system.time(mcMap(median, dat, na.rm=TRUE))
+system.time(parallelMap(median, dat, na.rm=TRUE))
 ```
 
-so that's not any better, but this is a small dataset
+parallel processing incurs time costs from memory management and message passing that can make small jobs take longer in parallel than in serial
 
 # Packages
 
