@@ -337,7 +337,7 @@ install.packages('devtools')
 
 ```{r}
 library(devtools)
-has_devel() # if this returns false, you will be unhappy
+# has_devel() # this is currently returning a clang compiler error
 ```
 
 ## basic components of a package
