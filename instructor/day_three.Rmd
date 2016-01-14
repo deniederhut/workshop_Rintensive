@@ -95,7 +95,7 @@ qplot(instructor.communicated, data = dat)
 qplot(wday, course.delivered, data = dat)
 ```
 
-## for 1D cateforical, use bar
+## for 1D categorical, use bar
 
 ```{r}
 ggplot(data=dat, aes(x=wday)) + geom_bar()
