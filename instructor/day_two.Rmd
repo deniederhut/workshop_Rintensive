@@ -67,6 +67,13 @@ str(my.data)
 
 in practice, you will only rarely create dataframes by hand, because creating tables in a text editor is both boring and prone to error
 
+## Readibility
+
+we've broken up the previous command across multiple lines to make it easier to read 
+this is a stylistic choice, and one that should be encouraged: however, it won't be obvious to most of the students that it is necessary to either highlight the whole command and run, or hit run for every line, starting from the first one, in order
+
+often, students will just run the second line, and be confused when nothing runs correctly in the console anymore - the way to get out of this is by hitting `ESC`
+
 # Reading dataframes from file
 
 ## why read data from text files? 
