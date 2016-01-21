@@ -556,6 +556,24 @@ cbind(my.data, my.data)
 
 you'll learn tomorrow about better ways to merge data, especially heterogeneous data
 
+# saving console output
+
+## introduction
+
+at the end of the day, it's likely that one or two students will want to know how to "save what we did". the commands are of course already in the .R file that the students have been typing their notes into. If they want to save the console output, they basically have three options:
+
+1. copy all the output and paste it into a separate text file; or,
+2. use a sink; or,
+3. write their notes as .Rmd
+
+## sinks
+
+to use a sink, have the student put `sink('filename')` as the very first line in their notes, and `sink()` as the very last. then, when they re-run their entire .R file, the output will go to a pdf called "filename" instead of the R console. for an example, see `save_console_output.*` in the examples directory.
+
+## .Rmd
+
+See [Dynamic documents in R Markdown](https://github.com/deniederhut/workshop_Rmd)
+
 # Acknowledgements
 
 ## Materials taken from:

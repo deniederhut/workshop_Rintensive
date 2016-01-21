@@ -1,0 +1,13 @@
+[1] "This is an example of redirecting console output to a pdf using sink()"
+
+	Welch Two Sample t-test
+
+data:  c(1, 2, 3, 4) and c(5, 6, 7, 8)
+t = -4.3818, df = 6, p-value = 0.004659
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -6.233715 -1.766285
+sample estimates:
+mean of x mean of y 
+      2.5       6.5 
+
