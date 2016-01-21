@@ -9,11 +9,18 @@ output: pdf_document
 knitr::opts_knit$set(root.dir = '../')
 ```
 
-## Introduction
+## Pre-introduction
 
-A note to the instructor:
+You should start by having your class go to our github page at [github.com/dlab-berkeley/R-for-Data-Science](github.com/dlab-berkeley/R-for-Data-Science) to get the course materials either via:
 
-These materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+1. `git clone https://github.com/dlab-berkeley/R-for-Data-Science.git`; or
+2. clicking the 'download zip` button on the right hand side of the screen
+
+The students won't need these materials today, but they will for the rest of the workshop. While everything is downloading, you can go on to:
+
+## Introduction to the class
+
+> side note - these materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
 
 It is a good idea to start off the class by asking folks why they want to learn R. Common responses include:
 
@@ -24,22 +31,26 @@ It is a good idea to start off the class by asking folks why they want to learn 
 
 The outline below is designed to give each of these kinds of students the tools they need to get what they want out of R while avoiding common pitfalls. As the instructor, you should draw on your own experience to include further examples and advice, especially for students who do not fall into one of the four categories above.
 
+## Introduction to R
+
 It may also be helpful to start off with a little bit of background knowledge about R. I find that explicitly informing students about the design principles of a language is a quick way to bootstrap their intuitions about how to use that language. R, for example, is a very old language whose objective was to allow scientists to quickly and interactively conduct statistical tests when the only other options at the time were:
 
 1. Compile a whole program in C or FORTRAN; or,
 2. Do the math yourself with a pencil and a piece of paper
 
-Obviously, both of these options suck, but they both suck for precisely the same reasons; they require lots of human time, and those humans have to be very knowledgeable about the mathematical principles underlying statistical computation (e.g. that even simple functions have multiple implementations to balance accuracy/efficiency for different input values).
+Obviously, neither of these is optimal, but what might not be obvious is that they both share the same problems; they require lots of human time, and those humans have to be very knowledgeable about the mathematical principles underlying statistical computation (e.g. that even simple functions have multiple implementations to balance accuracy/efficiency for different input values).
 
 The good news is that very complicated processes like logistic regression are a single command in R. The bad news is that R is typically not concerned with being logical or conistent. If you find yourself wanting to tear your hair out, this is **normal**. 
 
 # Object Oriented Programming
 
-In the grand scheme of computer software, object orientation is a way of organizing code such that it is easy to update without breaking. This means grouping functions that serve a similar purpose into hierarchies, which is a confusing and abstract way to think about things.
+In the grand scheme of computer software, object orientation is a way of organizing code such that it is easy to update without breaking. This means grouping functions that serve a similar purpose into hierarchies. However, stating it this way is confusing and abstract.
 
-You can think about it this way: a soccer ball is an object. So is a basketball. They share a lot of things in common. It's simpler to know that balls generaly bounce than to explicitly declare for every object I have ever seen in my entire life whether it bounces or not. I can't bounce you, for example, but you didn't need to tell me that when I met you. If I came to believe that people were bounce-able, I would update my idea of people generally, not every person specifically. 
+You can think about it this way: a soccer ball is an object. So is a basketball. They share a lot of things in common. It's simpler to know that balls generaly bounce than to explicitly declare for every ball I ever see in my entire life whether it bounces or not. I can't bounce you, for example, but you didn't need to tell me that when I met you. If I came to believe that people were bounce-able, I would update my idea of people generally, not every person specifically. 
 
 We call things like you and basketball `objects`, and they are in `classes` like human and ball. If I want to create a new object, like a football, I don't have to declare every single thing there is to know about footballs. I can say it `inherits` `attributes` from the `class` ball, except that it's an oblate spheroid instead of a sphere. Easy.
+
+> side note - if you are coming from C++ or Java, be warned that objects in R do not have methods that are accessible with dot notation (in fact, the `.` is used just like `_`)
 
 ## everything in R is an object
 
@@ -107,7 +118,7 @@ this means that R doesn't know that some things are objects, because they predat
 is.object(sum)
 ```
 
-most of R uses what are called S3 methods, which have no rules except be easy to use. this can make them wildly inconsistent, even to the point where a single function will have multiple sets of rules for how it can be called (you'll see this in a couple of days).
+most of R uses what are called S3 methods, which have no rules except be easy to use. this can make them wildly inconsistent, even to the point where a single function will have multiple sets of rules for how it can be called (you'll see this in day 3).
 
 > as a side note, there is also no agreement about how to name things, so you'll likely see a mixture of snake_case and CamelCase, based on the preferences of the person who originally wrote the function
 
@@ -126,7 +137,7 @@ your actions are all relative to that directory
 ## tell R where you would like it to be with
 
 ```{r, eval=FALSE}
-setwd("/Users/dillonniederhut/Dropbox/dlab/R-intensive")
+setwd("/Users/dillonniederhut/Dropbox/dlab/R-for-Data-Science")
 ```
 
 ## find out what's in your directory with
@@ -137,7 +148,7 @@ dir()
 
 ## find out what's in your environment with
 
-in R, you are always in an environment (more on scoping later)
+in R, you are always in an environment (more on scoping in day 4)
 
 ```{r}
 ls()
@@ -199,7 +210,7 @@ library(Amelia)
 
 note that when you are installing something, you give R a bunch of letters to search CRAN for, which is why it's in quotes
 
-but when you pull it into your environment, you are calling a function on a variable name, which is why it isn't in quotes
+but when you pull it into your environment, you are calling a function on a `name`, which is why it isn't in quotes
 
 ## if you try to call `library` on package that you haven't downloaded, R will fuss at you
 
@@ -263,7 +274,7 @@ you could also use `mode` to get the type of an object
 
 this will mean later, when you try to call `mode` to get the most frequently occurring level of a variable, you will be frustrated and sad
 
-don't hate the messenger
+don't dislike the messenger
 
 you will likely only ever deal with five flavors of data in R, which are stored as 
 
@@ -276,6 +287,8 @@ class("Look mama I'm letters")
 class(as.Date("2015-07-27"))
 class(factor(c('undergraduate','graduate','professor','staff')))
 ```
+
+> side note - by default, R stores everything as doubles (64 bit floating point numbers) which makes R very memory hungry. You can force it use an integer type with the `L` operator, like: `class(1L) ==` `r class(1L)`
 
 we've already dealt a lot with numerics above, so let's talk about
 
@@ -291,6 +304,10 @@ TRUE * TRUE
 ```
 
 this can make it easy to use if/then statements, as `if x` evaluates to `TRUE` if it is anything other than zero
+
+```{r}
+if (9001) print('This is evaluated as a boolean value')
+```
 
 also, any vector (we'll talk about these below) multiplied by a boolean vector has all of its false values set to zero, which can be helpful for summing and average only specific cases
 
@@ -373,7 +390,9 @@ this can cause issues when making plots or trying to display in a particular ord
 ## try giving your factor explicitly numeric levels and character labels
 
 ```{r}
-my.factor <- factor(c(1,2,3,4), levels=c('undergraduate','graduate','professor','staff'))
+my.factor <- factor(c(1,2,3,4), 
+                    levels=c(1,2,3,4), 
+                    labels=c('undergraduate','graduate','professor','staff'))
 levels(my.factor)
 ```
 
@@ -536,6 +555,24 @@ cbind(my.data, my.data)
 ```
 
 you'll learn tomorrow about better ways to merge data, especially heterogeneous data
+
+# saving console output
+
+## introduction
+
+at the end of the day, it's likely that one or two students will want to know how to "save what we did". the commands are of course already in the .R file that the students have been typing their notes into. If they want to save the console output, they basically have three options:
+
+1. copy all the output and paste it into a separate text file; or,
+2. use a sink; or,
+3. write their notes as .Rmd
+
+## sinks
+
+to use a sink, have the student put `sink('filename')` as the very first line in their notes, and `sink()` as the very last. then, when they re-run their entire .R file, the output will go to a pdf called "filename" instead of the R console. for an example, see `save_console_output.*` in the examples directory.
+
+## .Rmd
+
+See [Dynamic documents in R Markdown](https://github.com/deniederhut/workshop_Rmd)
 
 # Acknowledgements
 

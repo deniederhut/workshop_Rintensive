@@ -39,8 +39,8 @@ R expects dataframes to be rectangular
 ```{r}
 state <- state.x77
 rm(state.x77)
-state <- as.data.frame(state) 
-head(state)     
+state <- as.data.frame(state)
+head(state)
 ```
 
 ## Introduction
@@ -53,8 +53,8 @@ yesterday we saw how to create dataframes in R
 my.data <- data.frame(n = c(1, 2, 3),
                       c=c('one', 'two', 'three'),
                       b=c(TRUE, TRUE, FALSE),
-                      d=c(as.Date("2015-07-27"), 
-                          as.Date("2015-07-27")+7, 
+                      d=c(as.Date("2015-07-27"),
+                          as.Date("2015-07-27")+7,
                           as.Date("2015-07-27")-7),
                       really.long.and.complicated.variable.name=999)
 ```
@@ -65,17 +65,26 @@ remember, you can learn about dataframes with
 str(my.data)
 ```
 
-in practice, you will only rarely create dataframes by hand, because creating tables in a text editor (or heaven forbid a command line) sucks
+in practice, you will only rarely create dataframes by hand, because creating tables in a text editor is both boring and prone to error
+
+## Readibility
+
+we've broken up the previous command across multiple lines to make it easier to read
+this is a stylistic choice, and one that should be encouraged: however, it won't be obvious to most of the students that it is necessary to either highlight the whole command and run, or hit run for every line, starting from the first one, in order
+
+often, students will just run the second line, and be confused when nothing runs correctly in the console anymore - the way to get out of this is by hitting `ESC`
 
 # Reading dataframes from file
 
-## why read data from text files? 
+## why read data from text files?
 
 they are human-readable and highly interoperable
 
 ```{r}
 read.table("data/mydata.csv", sep=',', header = TRUE)
 ```
+
+> side note - anyone who is 100% new to computing will have a hard time understanding the concept of a working directory, and will try to run this code from their home directory (spoiler alert - it doesn't work)
 
 ## R has convenience wrappers for reading in tables
 
@@ -117,100 +126,6 @@ read.spss()
 read.octave()
 ```
 
-# Data does not need to be in the local filesystem
-
-## R has an interface to curl called RCurl
-
-```{r}
-#install.packages('RCurl')
-library(RCurl)
-#install.packages("XML")
-library(XML)
-```
-
-## you can use this to access remote data
-
-you may just want to read text lines from a webpage
-
-```{r}
-RJ <- readLines("http://shakespeare.mit.edu/romeo_juliet/full.html")  
-RJ[1:25]
-```
-
-and use the kinds of string manipulation we learned yesterday to retrieve the first lines of an act or a scene
-
-```{r}
-RJ[grep("<h3>", RJ, perl=T)]
-RJ[grep("<h3>", RJ, perl=TRUE)]
-```
-
-or maybe pull information out of an RSS feed
-
-```{r, eval=FALSE}
-link <- "http://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"
-page <- getURL(url = link)
-xmlParse(file = page)
-```
-
-## R also has libraries for pulling and parsing web pages
-
-```{r}
-link<-"http://clerk.house.gov/evs/2014/ROLL_000.asp"
-readHTMLTable(doc=link, header=T, which=1, stringsAsFactors=F)[1:10, ]
-```
-
-# Connecting to a database
-
-why read from a database? they use less memory, are faster, create their own backups, and offer optimized querying/joining
-
-databases generally come in two flavors, relational and non-relational, which has to do with how important schemas are (and is a bit beyond the scope of an R intro)
-
-two popular relational databases are SQL (or one of its many flavors)
-
-```{r, eval=FALSE}
-#are there websites that allow you to connect to test servers?
-install.packages("RMySQL")
-library(RMySQL)
-con <- dbConnect(MySQL(),
-         user="", password="",
-         dbname="", host="localhost")
-data <- fetch(dbSendQuery(con, "select * from table"), n=10)
-con.exit(dbDisconnect(con))
-```
-
-and postgres
-
-```{r, eval=FALSE}
-install.packages("RPostgreSQL")
-library(RPostgreSQL)
-con <- dbConnect(dbDriver("PostgreSQL"),
-                 dbname="", 
-                 host="localhost",
-                 port=1234, 
-                 user="", 
-                 password="")
-data <- dbReadTable(con, c("column1","column2"))
-dbDisconnect(con)
-```
-
-a popular non-relational database is MongoDB
-
-```{r, eval=FALSE}
-install.packages("rmongodb")
-library(rmongodb)
-con <- mongo.create(host = localhost, 
-                      name = "", 
-                      username = "", 
-                      password = "", 
-                      db = "admin")
-if(mongo.is.connected(con) == TRUE) {
-  data <- mongo.find.all(con, "collection", list("city" = list( "$exists" = "true")))
-}
-mongo.destroy(con)
-```
-
-one quirk about mongo is that your connection always authenticates to the authentication database, not the database you are querying - this db is usually called 'admin'
-
 # Cleaning data
 
 there are two major steps to data cleaning, which we will call 'sanitizing' and 'tidying'
@@ -239,7 +154,7 @@ str(dirty)
 
 ```{r}
 tail(dirty)
-dirty <- dirty[1:5,-6]  
+dirty <- dirty[1:5,-6]
 dim(dirty)
 ```
 
@@ -252,7 +167,7 @@ names(dirty)
 names(dirty) <- c("time", "height", "dept", "enroll", "birth.order")
 ```
 
-## it's common for hand-coded data to have a signifier for subject-missingness 
+## it's common for hand-coded data to have a signifier for subject-missingness
 
 (to help differentiate it from your hand-coder forgetting to do something)
 
@@ -333,7 +248,7 @@ there are many reasons why you might have missing data
 
 deleting those observations is wasteful, but easy (listwise deletion)
 
-ignoring the individual missing data points is not bad (casewise deletion)
+ignoring the individual missing data points is typical (casewise deletion)
 
 imputing mean values for missing data is possibly the worst thing you can do
 
@@ -358,7 +273,7 @@ this is usually the default strategy
 
 ## remember how we talked about the extensibility of R?
 
-amelia is a package that makes a complicated MI approach stupidly easy
+amelia is a package that makes a complicated MI approach work without you knowing anything about its implementation
 
 ```{r}
 library(Amelia)
@@ -484,6 +399,8 @@ str(my.data$numeric)
 
 ## most tidying can be done with two R packages
 
+(plus a wrapper around the base string functions)
+
 ```{r, eval=FALSE}
 install.packages('reshape2')
 install.packages('stringr')
@@ -562,7 +479,7 @@ you can do an *inner* join using merge
 merge(data.1, data.2, by = 'id')
 ```
 
-that's no good - we lost half of our people! 
+that's no good - we lost half of our people!
 
 inner joins are mostly used when you **only** want records that appear in both tables
 
@@ -602,6 +519,78 @@ lookup[lookup$location == 'Reno', ]
 
 but doesn't show up when we merge - why do you think this is?
 
+# Transforming data
+
+## introduction
+
+because R started out as a functional language, it can be hard to modify data, especially in place
+
+in practice, if you want 100% control over how your frames are being modified, you'll be writing lots of `for` loops, which is messy
+
+luckily, there is a package that handles the common tasks for you
+
+```{r}
+library(dplyr)
+```
+
+## sort data with `arranage`
+
+base R syntax for sorting is a bit of a pain in that you have to create a sorting vector based on the values in a column, then subset the same dataframe and apply the sorting vector to the rows slice
+
+to demonstrate this, let's start by making a toy data frame
+
+```{r}
+toy <- data.frame(
+  id = c(1,1,1,2,2,2,3,3,3),
+  score.1 = c(90,94,40,80,80,80,76,80,82)
+)
+arrange(toy, score.1)
+```
+
+## select rows by pattern with `select`
+
+it's common for variables that measure similar things to have similar names, but selecting columns this was in base R requires running `grepl` on column names, then subsetting the dataframe and applying the logical vector to the column field
+
+```{r}
+toy$score.2 <- 100
+select(toy, score.1, score.2)
+select(toy, contains('score'))
+```
+
+## apply summary fucntions with `summarise`
+
+dplyr includes most of the base R summary statistics, along with:
+
+* `n()`
+* `n_distinct()`
+* `first()`
+* `last()`
+
+```{r}
+summarise(toy, n(), n_distinct(score.1), last(score.1))
+```
+
+## dplyr allows you to apply functions to groups
+
+so far, these have taken base R functions and made them faster (with C++ calls behind the scenes), easier to use, or both
+
+dplyr's real utility is in its grouped dataframes, which apply dplyr functions groupwise
+
+```{r}
+group_by(toy, id)
+summarise(group_by(toy, id), n(), n_distinct(score.1))
+```
+
+you can add as many functions as you want inbetween, but wrapping function call around function call can be hard to read (and write!)
+
+## you can pipe functions with the `%>%` operator
+
+this will look very familiar if you are used to working in bash
+
+```{r}
+toy %>% group_by(id) %>% summarise(n(), n_distinct(score.1))
+```
+
 # Practice
 
 ## Grab some data from Pew
@@ -628,18 +617,18 @@ religion$reltrad[religion$q16 == " Agnostic (not sure if there is a God) "] <- "
 religion$reltrad <- str_trim(religion$reltrad)
 religion$reltrad <- str_replace_all(religion$reltrad, " \\(.*?\\)", "")
 
-religion$income <- c("Less than $10,000" = "<$10k", 
-  "10 to under $20,000" = "$10-20k", 
-  "20 to under $30,000" = "$20-30k", 
-  "30 to under $40,000" = "$30-40k", 
-  "40 to under $50,000" = "$40-50k", 
+religion$income <- c("Less than $10,000" = "<$10k",
+  "10 to under $20,000" = "$10-20k",
+  "20 to under $30,000" = "$20-30k",
+  "30 to under $40,000" = "$30-40k",
+  "40 to under $50,000" = "$40-50k",
   "50 to under $75,000" = "$50-75k",
-  "75 to under $100,000" = "$75-100k", 
-  "100 to under $150,000" = "$100-150k", 
-  "$150,000 or more" = ">150k", 
+  "75 to under $100,000" = "$75-100k",
+  "100 to under $150,000" = "$100-150k",
+  "$150,000 or more" = ">150k",
   "Don't know/Refused (VOL)" = "Don't know/refused")[religion$income]
 
-religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k", 
+religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k",
   "$75-100k", "$100-150k", ">150k", "Don't know/refused"))
 ```
 
@@ -655,76 +644,4 @@ names(religion)[1] <- "religion"
 ## Materials taken from:
 
 [Chris Krogslund](https://github.com/ckrogs/r_useful_dlab)
-
 [Hadley Wickham](http://www.jstatsoft.org/v59/i10/paper)
-
-===
-
-The material below was taken from Chris's useful things workshop, and should be retooled for this intensive
-
-## enter plyr
-
-- *plyr* is the go-to package for all your splitting-applying-combining needs
-- Among its many benefits (above base R capabilities):
-a) Don't have to worry about different name, argument, or output consistencies
-b) Easily parallelized 
-c) Input from, and output to, data frames, matricies, and lists
-d) Progress bars for lengthy computation
-e) Informative error messages
-
-## group-wise operations/plyr/selecting functions
-
-- Two essential questions:
-    1. What is the class of your input object?
-    2. What is the class of your desired output object?
-- If you want to split a **d**ata frame, and return results as a **d**ata frame, you use **dd**ply
-- If you want to split a **d**ata frame, and return results as a **l**ist, you use **dl**ply
-- If you want to split a **l**ist, and return results as a **d**ata frame, you use **ld**ply
-
-
-```{r, eval=FALSE}
-# plyr package
-mydata <- read.csv("http://www.ats.ucla.edu/stat/data/binary.csv")
-# Consider the case where we want to calculate descriptive statistics across admits and not-admits
-# from the dataset and return them as a data.frame
-ddata <- ddply(mydata, c("admit"), summarize, 
-                gpa.over3 = length(gpa[gpa>=3]),
-                gpa.over3.5 = length(gpa[gpa>=3.5]),
-                gpa.over3per = length(gpa[gpa>=3])/length(gpa),
-                gpa.over3.5per = length(gpa[gpa>=3.5])/length(gpa))
-)
-```
-
-# Group-wise Operations/plyr/functions
-
-- plyr can accomodate any user-defined function, but it also comes with some pre-defined functions that assist with the most common split-apply-combine tasks
-- We've already seen **summarize**, which creates user-specified vectors and combines them into a data.frame.  Here are some other helpful functions:
-
-**transform**: applies a function to a data.frame and adds new vectors (columns) to it
-
-# add a column containing the average gre score of students
-
-```{r, eval=FALSE}
-
-mydata <- ddply(mydata, c("admit"), transform, 
-                gre.ave=mean(x=gre, na.rm=T),
-                gre.sd = sd(x=gre, na.rm=T))
-head(mydata)
-unique(mydata$gre.ave)
-)
-```
-
-> side note: note that **transform** can't do transformations that involve the results of *other* transformations from the same call
-
-Another very useful function is **arrange**, which orders a data frame on the basis of column contents
-
-```{r, eval=FALSE}
-# Another very useful function is arrange, which orders a data frame on the basis of column contents
-# arrange by "rank"
-mydata.rank <- plyr::arrange(mydata, rank)
-# arrange by "rank", descending
-mydata.rank <- plyr::arrange(mydata, desc(rank))
-# arrange by "rank", then "gre", then "gpa
-mydata.comb <- plyr::arrange(mydata, rank, desc(gre), desc(gpa))
-head(mydata.comb)
-```
