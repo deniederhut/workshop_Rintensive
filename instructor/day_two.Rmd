@@ -634,8 +634,8 @@ religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-3
 
 ## now we can reduce this down to three columns for three variables
 
-```{r}
-religion <- count(religion, c("reltrad", "income"))
+```{r, eval=FALSE}
+religion <- count(religion, reltrad, income)
 names(religion)[1] <- "religion"
 ```
 
