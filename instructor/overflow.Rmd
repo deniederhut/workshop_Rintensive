@@ -2,7 +2,9 @@
 title: "Additional Course Materials"
 author: "Dillon Niederhut"
 date: "October 13, 2015"
-output: pdf_document
+output: 
+- pdf_document
+- slidy_presentation
 ---
 
 ```{r, echo=FALSE}
