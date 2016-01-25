@@ -1,7 +1,7 @@
 ---
 title: "Additional Course Materials"
 author: "Dillon Niederhut"
-date: "October 13, 2015"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
 - pdf_document
 - slidy_presentation

@@ -1,7 +1,7 @@
 ---
 title: 'Day Two: Data Cleaning'
 author: ["Dillon Niederhut", "Shinhye Choi"]
-date: "August, 19, 2015"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
 - pdf_document
 - slidy_presentation
