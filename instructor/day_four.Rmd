@@ -1,8 +1,10 @@
 ---
 title: "Day Four: Functional Programming"
 author: ["Dillon Niederhut", "Shinhye Choi"]
-date: "July 27, 2015"
-output: pdf_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+- pdf_document
+- slidy_presentation
 ---
 
 ```{r, echo=FALSE}

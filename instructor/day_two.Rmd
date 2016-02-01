@@ -1,8 +1,10 @@
 ---
 title: 'Day Two: Data Cleaning'
 author: ["Dillon Niederhut", "Shinhye Choi"]
-date: "August, 19, 2015"
-output: pdf_document
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+- pdf_document
+- slidy_presentation
 ---
 
 ```{r, echo=FALSE}
@@ -109,6 +111,7 @@ this is typically a bad thing, and there is currently no easy workaround
 if you are exporting data from excel, be sure to export datetimes as strings, as excel does not store dates internally the same way Unix does
 
 ```{r, eval=FALSE}
+# WARNING! xlsx package install crashed current version of RStudio
 install.packages("xlsx")
 library(xlsx)
 read.xlsx("data/cpds_excel_new.xlsx")
@@ -634,8 +637,8 @@ religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-3
 
 ## now we can reduce this down to three columns for three variables
 
-```{r}
-religion <- count(religion, c("reltrad", "income"))
+```{r, eval=FALSE}
+religion <- count(religion, reltrad, income)
 names(religion)[1] <- "religion"
 ```
 
