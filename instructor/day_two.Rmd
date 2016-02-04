@@ -96,6 +96,16 @@ read.csv("data/mydata.csv")
 
 note that we are only reading the files by doing this
 
+## R lets you read in part of a table
+
+you'll sometimes find that you want to work with a smaller part of a dataset - maybe because the data is too large to fit into memory, or maybe because you want to test out some code on a small piece of the data so it runs faster
+
+```{r}
+read.csv("data/mydata.csv", nrows=2)
+```
+
+note that `nrows` is **not** equal to the number of lines in the file, because it does not include the file header
+
 ## R also has its own kind of data file
 
 ```{r}
