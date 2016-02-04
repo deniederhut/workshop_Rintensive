@@ -54,7 +54,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <p class="author">
 Dillon Niederhut
   </p>
-  <p class="date">25 January, 2016</p>
+  <p class="date">04 February, 2016</p>
 </div>
 <div class="slide section level1">
 
@@ -128,7 +128,7 @@ Dillon Niederhut
 ##     }
 ##     else all.names
 ## }
-## &lt;bytecode: 0x7fc3cca239b8&gt;
+## &lt;bytecode: 0x7f8099a3f7b8&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <p><code>ls</code>, like basketball, is a specific thing with a <code>name</code> and stuff inside it that makes it <code>ls</code> and not dillon niederhut. in this particular instance, we are looking at the function that tells you what <code>objects</code> are in your <code>environment</code></p>
 <p>until we get to functional programming, your <code>environment</code> is just R plus whatever you put in R</p>
@@ -141,16 +141,19 @@ my.name</code></pre></div>
 ##     no.. = FALSE) 
 ## .Internal(list.files(path, pattern, all.files, full.names, recursive, 
 ##     ignore.case, include.dirs, no..))
-## &lt;bytecode: 0x7fc3cbc13510&gt;
+## &lt;bytecode: 0x7f809d5c7910&gt;
 ## &lt;environment: namespace:base&gt;</code></pre>
 <h2 id="names-must-be-unique">names must be unique</h2>
 <p>everytime you give an <code>object</code> a <code>name</code>, it removes anything that already had that <code>name</code> from your environment</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my.name &lt;-<span class="st"> </span><span class="kw">dir</span>()
 my.name</code></pre></div>
-<pre><code>## [1] &quot;data&quot;                     &quot;examples&quot;                
-## [3] &quot;instructor&quot;               &quot;LICENSE&quot;                 
-## [5] &quot;R-for-Data-Science.Rproj&quot; &quot;README.md&quot;               
-## [7] &quot;scripts&quot;</code></pre>
+<pre><code>##  [1] &quot;CONTRIBUTING.md&quot;            &quot;convertR&quot;                  
+##  [3] &quot;convertR_0.0.0.9000.tar.gz&quot; &quot;data&quot;                      
+##  [5] &quot;examples&quot;                   &quot;instructor&quot;                
+##  [7] &quot;LICENSE&quot;                    &quot;R-intensive.Rproj&quot;         
+##  [9] &quot;README.html&quot;                &quot;README.md&quot;                 
+## [11] &quot;scripts&quot;                    &quot;test.html&quot;                 
+## [13] &quot;test.pdf&quot;                   &quot;test.Rmd&quot;</code></pre>
 <p>you see those parentheses? that means you are calling an object (here, it’s a function evaluator) on <code>dir</code>.</p>
 <h2 id="classes-in-r">classes in R</h2>
 <p>because it is code to be evalueated, <code>dir</code> belongs in a class called ‘functions’</p>
@@ -178,17 +181,20 @@ my.name</code></pre></div>
 <h1>living in R</h1>
 <h2 id="figure-out-where-you-are-with">figure out where you are with</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getwd</span>()</code></pre></div>
-<pre><code>## [1] &quot;/Users/dillon/Dropbox/dlab/workshops/R-for-Data-Science&quot;</code></pre>
+<pre><code>## [1] &quot;/Users/dillon/Dropbox/dlab/workshops/Rintensive&quot;</code></pre>
 <p>like in Unix, in R you are always in a directory</p>
 <p>your actions are all relative to that directory</p>
 <h2 id="tell-r-where-you-would-like-it-to-be-with">tell R where you would like it to be with</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">setwd</span>(<span class="st">&quot;/Users/dillonniederhut/Dropbox/dlab/R-for-Data-Science&quot;</span>)</code></pre></div>
 <h2 id="find-out-whats-in-your-directory-with">find out what’s in your directory with</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir</span>()</code></pre></div>
-<pre><code>## [1] &quot;data&quot;                     &quot;examples&quot;                
-## [3] &quot;instructor&quot;               &quot;LICENSE&quot;                 
-## [5] &quot;R-for-Data-Science.Rproj&quot; &quot;README.md&quot;               
-## [7] &quot;scripts&quot;</code></pre>
+<pre><code>##  [1] &quot;CONTRIBUTING.md&quot;            &quot;convertR&quot;                  
+##  [3] &quot;convertR_0.0.0.9000.tar.gz&quot; &quot;data&quot;                      
+##  [5] &quot;examples&quot;                   &quot;instructor&quot;                
+##  [7] &quot;LICENSE&quot;                    &quot;R-intensive.Rproj&quot;         
+##  [9] &quot;README.html&quot;                &quot;README.md&quot;                 
+## [11] &quot;scripts&quot;                    &quot;test.html&quot;                 
+## [13] &quot;test.pdf&quot;                   &quot;test.Rmd&quot;</code></pre>
 <h2 id="find-out-whats-in-your-environment-with">find out what’s in your environment with</h2>
 <p>in R, you are always in an environment (more on scoping in day 4)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ls</span>()</code></pre></div>

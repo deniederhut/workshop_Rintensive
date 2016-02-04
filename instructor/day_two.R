@@ -13,15 +13,15 @@ levels(state.division)
 ## ------------------------------------------------------------------------
 state <- state.x77
 rm(state.x77)
-state <- as.data.frame(state) 
-head(state)     
+state <- as.data.frame(state)
+head(state)
 
 ## ------------------------------------------------------------------------
 my.data <- data.frame(n = c(1, 2, 3),
                       c=c('one', 'two', 'three'),
                       b=c(TRUE, TRUE, FALSE),
-                      d=c(as.Date("2015-07-27"), 
-                          as.Date("2015-07-27")+7, 
+                      d=c(as.Date("2015-07-27"),
+                          as.Date("2015-07-27")+7,
                           as.Date("2015-07-27")-7),
                       really.long.and.complicated.variable.name=999)
 
@@ -33,6 +33,9 @@ read.table("data/mydata.csv", sep=',', header = TRUE)
 
 ## ------------------------------------------------------------------------
 read.csv("data/mydata.csv")
+
+## ------------------------------------------------------------------------
+read.csv("data/mydata.csv", nrows=2)
 
 ## ------------------------------------------------------------------------
 load("data/mydata.Rda")
@@ -61,7 +64,7 @@ str(dirty)
 
 ## ------------------------------------------------------------------------
 tail(dirty)
-dirty <- dirty[1:5,-6]  
+dirty <- dirty[1:5,-6]
 dim(dirty)
 
 ## ------------------------------------------------------------------------
@@ -260,18 +263,18 @@ religion$reltrad[religion$q16 == " Agnostic (not sure if there is a God) "] <- "
 religion$reltrad <- str_trim(religion$reltrad)
 religion$reltrad <- str_replace_all(religion$reltrad, " \\(.*?\\)", "")
 
-religion$income <- c("Less than $10,000" = "<$10k", 
-  "10 to under $20,000" = "$10-20k", 
-  "20 to under $30,000" = "$20-30k", 
-  "30 to under $40,000" = "$30-40k", 
-  "40 to under $50,000" = "$40-50k", 
+religion$income <- c("Less than $10,000" = "<$10k",
+  "10 to under $20,000" = "$10-20k",
+  "20 to under $30,000" = "$20-30k",
+  "30 to under $40,000" = "$30-40k",
+  "40 to under $50,000" = "$40-50k",
   "50 to under $75,000" = "$50-75k",
-  "75 to under $100,000" = "$75-100k", 
-  "100 to under $150,000" = "$100-150k", 
-  "$150,000 or more" = ">150k", 
+  "75 to under $100,000" = "$75-100k",
+  "100 to under $150,000" = "$100-150k",
+  "$150,000 or more" = ">150k",
   "Don't know/Refused (VOL)" = "Don't know/refused")[religion$income]
 
-religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k", 
+religion$income <- factor(religion$income, levels = c("<$10k", "$10-20k", "$20-30k", "$30-40k", "$40-50k", "$50-75k",
   "$75-100k", "$100-150k", ">150k", "Don't know/refused"))
 
 ## ---- eval=FALSE---------------------------------------------------------

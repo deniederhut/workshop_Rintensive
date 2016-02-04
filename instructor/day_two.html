@@ -55,7 +55,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <p class="author">
 Dillon Niederhut<br />Shinhye Choi
   </p>
-  <p class="date">25 January, 2016</p>
+  <p class="date">04 February, 2016</p>
 </div>
 <div id="review" class="slide section level1">
 <h1>Review</h1>
@@ -96,8 +96,8 @@ Dillon Niederhut<br />Shinhye Choi
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">state &lt;-<span class="st"> </span>state.x77
 <span class="kw">rm</span>(state.x77)</code></pre></div>
 <pre><code>## Warning in rm(state.x77): object 'state.x77' not found</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">state &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(state) 
-<span class="kw">head</span>(state)     </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">state &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(state)
+<span class="kw">head</span>(state)</code></pre></div>
 <pre><code>##            Population Income Illiteracy Life Exp Murder HS Grad Frost
 ## Alabama          3615   3624        2.1    69.05   15.1    41.3    20
 ## Alaska            365   6315        1.5    69.31   11.3    66.7   152
@@ -118,8 +118,8 @@ Dillon Niederhut<br />Shinhye Choi
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my.data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),
                       <span class="dt">c=</span><span class="kw">c</span>(<span class="st">'one'</span>, <span class="st">'two'</span>, <span class="st">'three'</span>),
                       <span class="dt">b=</span><span class="kw">c</span>(<span class="ot">TRUE</span>, <span class="ot">TRUE</span>, <span class="ot">FALSE</span>),
-                      <span class="dt">d=</span><span class="kw">c</span>(<span class="kw">as.Date</span>(<span class="st">&quot;2015-07-27&quot;</span>), 
-                          <span class="kw">as.Date</span>(<span class="st">&quot;2015-07-27&quot;</span>)+<span class="dv">7</span>, 
+                      <span class="dt">d=</span><span class="kw">c</span>(<span class="kw">as.Date</span>(<span class="st">&quot;2015-07-27&quot;</span>),
+                          <span class="kw">as.Date</span>(<span class="st">&quot;2015-07-27&quot;</span>)+<span class="dv">7</span>,
                           <span class="kw">as.Date</span>(<span class="st">&quot;2015-07-27&quot;</span>)-<span class="dv">7</span>),
                       <span class="dt">really.long.and.complicated.variable.name=</span><span class="dv">999</span>)</code></pre></div>
 <p>remember, you can learn about dataframes with</p>
@@ -154,6 +154,13 @@ Dillon Niederhut<br />Shinhye Choi
 ## 2 2   two  TRUE 2015-08-03                                       999
 ## 3 3 three FALSE 2015-07-20                                       999</code></pre>
 <p>note that we are only reading the files by doing this</p>
+<h2 id="r-lets-you-read-in-part-of-a-table">R lets you read in part of a table</h2>
+<p>you’ll sometimes find that you want to work with a smaller part of a dataset - maybe because the data is too large to fit into memory, or maybe because you want to test out some code on a small piece of the data so it runs faster</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">read.csv</span>(<span class="st">&quot;data/mydata.csv&quot;</span>, <span class="dt">nrows=</span><span class="dv">2</span>)</code></pre></div>
+<pre><code>##   n   c    b          d really.long.and.complicated.variable.name
+## 1 1 one TRUE 2015-07-27                                       999
+## 2 2 two TRUE 2015-08-03                                       999</code></pre>
+<p>note that <code>nrows</code> is <strong>not</strong> equal to the number of lines in the file, because it does not include the file header</p>
 <h2 id="r-also-has-its-own-kind-of-data-file">R also has its own kind of data file</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;data/mydata.Rda&quot;</span>)</code></pre></div>
 <p>the <code>load</code> function does actually put the file into memory, and with the name you originally gave it when you saved it</p>
@@ -211,7 +218,7 @@ Dillon Niederhut<br />Shinhye Choi
 ## 3                         999                         2
 ## 4                          No                     9,000
 ## 5                         999                         2</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dirty &lt;-<span class="st"> </span>dirty[<span class="dv">1</span>:<span class="dv">5</span>,-<span class="dv">6</span>]  
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dirty &lt;-<span class="st"> </span>dirty[<span class="dv">1</span>:<span class="dv">5</span>,-<span class="dv">6</span>]
 <span class="kw">dim</span>(dirty)</code></pre></div>
 <pre><code>## [1] 5 5</code></pre>
 <h2 id="you-can-replace-variable-names">you can replace variable names</h2>
@@ -341,11 +348,11 @@ dirty$birth.order &lt;-<span class="st"> </span><span class="kw">as.numeric</spa
 <span class="kw">summary</span>(large.imputed)</code></pre></div>
 <pre><code>##        a                   b               c          
 ##  Min.   :-33.98426   Min.   :-13.4   Min.   :-249999  
-##  1st Qu.: -6.71140   1st Qu.:128.1   1st Qu.:-140641  
-##  Median :  0.34851   Median :251.9   Median : -63741  
-##  Mean   :  0.00161   Mean   :250.1   Mean   : -83404  
-##  3rd Qu.:  6.99412   3rd Qu.:373.9   3rd Qu.: -15626  
-##  Max.   : 35.33306   Max.   :588.5   Max.   :  59293</code></pre>
+##  1st Qu.: -6.69212   1st Qu.:126.7   1st Qu.:-140641  
+##  Median :  0.34851   Median :252.0   Median : -63513  
+##  Mean   : -0.03793   Mean   :250.2   Mean   : -83204  
+##  3rd Qu.:  6.94442   3rd Qu.:375.3   3rd Qu.: -15380  
+##  Max.   : 35.33306   Max.   :513.3   Max.   :  67260</code></pre>
 <h2 id="if-you-give-it-a-tiny-dataset-it-will-fuss-at-you">if you give it a tiny dataset, it will fuss at you</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">a &lt;-<span class="st"> </span><span class="kw">amelia</span>(large[<span class="dv">990</span>:<span class="dv">1000</span>,],<span class="dt">m =</span> <span class="dv">1</span>)</code></pre></div>
 <pre><code>## Warning in amelia.prep(x = x, m = m, idvars = idvars, empri = empri, ts =
@@ -354,7 +361,7 @@ dirty$birth.order &lt;-<span class="st"> </span><span class="kw">as.numeric</spa
 ## reducing the order of time polynomials to reduce the number of parameters.</code></pre>
 <pre><code>## -- Imputation 1 --
 ## 
-##   1  2</code></pre>
+##  No missing data in bootstrapped sample:  EM chain unnecessary</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(a)</code></pre></div>
 <pre><code>## 
 ## Amelia output with 1 imputed datasets.
@@ -363,7 +370,7 @@ dirty$birth.order &lt;-<span class="st"> </span><span class="kw">as.numeric</spa
 ## 
 ## Chain Lengths:
 ## --------------
-## Imputation 1:  2</code></pre>
+## Imputation 1:</code></pre>
 </div>
 <div id="reshaping" class="slide section level1">
 <h1>Reshaping</h1>
@@ -680,18 +687,18 @@ religion$reltrad[religion$q16 ==<span class="st"> &quot; Agnostic (not sure if t
 religion$reltrad &lt;-<span class="st"> </span><span class="kw">str_trim</span>(religion$reltrad)
 religion$reltrad &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(religion$reltrad, <span class="st">&quot; </span><span class="ch">\\</span><span class="st">(.*?</span><span class="ch">\\</span><span class="st">)&quot;</span>, <span class="st">&quot;&quot;</span>)
 
-religion$income &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Less than $10,000&quot;</span> =<span class="st"> &quot;&lt;$10k&quot;</span>, 
-  <span class="st">&quot;10 to under $20,000&quot;</span> =<span class="st"> &quot;$10-20k&quot;</span>, 
-  <span class="st">&quot;20 to under $30,000&quot;</span> =<span class="st"> &quot;$20-30k&quot;</span>, 
-  <span class="st">&quot;30 to under $40,000&quot;</span> =<span class="st"> &quot;$30-40k&quot;</span>, 
-  <span class="st">&quot;40 to under $50,000&quot;</span> =<span class="st"> &quot;$40-50k&quot;</span>, 
+religion$income &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Less than $10,000&quot;</span> =<span class="st"> &quot;&lt;$10k&quot;</span>,
+  <span class="st">&quot;10 to under $20,000&quot;</span> =<span class="st"> &quot;$10-20k&quot;</span>,
+  <span class="st">&quot;20 to under $30,000&quot;</span> =<span class="st"> &quot;$20-30k&quot;</span>,
+  <span class="st">&quot;30 to under $40,000&quot;</span> =<span class="st"> &quot;$30-40k&quot;</span>,
+  <span class="st">&quot;40 to under $50,000&quot;</span> =<span class="st"> &quot;$40-50k&quot;</span>,
   <span class="st">&quot;50 to under $75,000&quot;</span> =<span class="st"> &quot;$50-75k&quot;</span>,
-  <span class="st">&quot;75 to under $100,000&quot;</span> =<span class="st"> &quot;$75-100k&quot;</span>, 
-  <span class="st">&quot;100 to under $150,000&quot;</span> =<span class="st"> &quot;$100-150k&quot;</span>, 
-  <span class="st">&quot;$150,000 or more&quot;</span> =<span class="st"> &quot;&gt;150k&quot;</span>, 
+  <span class="st">&quot;75 to under $100,000&quot;</span> =<span class="st"> &quot;$75-100k&quot;</span>,
+  <span class="st">&quot;100 to under $150,000&quot;</span> =<span class="st"> &quot;$100-150k&quot;</span>,
+  <span class="st">&quot;$150,000 or more&quot;</span> =<span class="st"> &quot;&gt;150k&quot;</span>,
   <span class="st">&quot;Don't know/Refused (VOL)&quot;</span> =<span class="st"> &quot;Don't know/refused&quot;</span>)[religion$income]
 
-religion$income &lt;-<span class="st"> </span><span class="kw">factor</span>(religion$income, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;$10k&quot;</span>, <span class="st">&quot;$10-20k&quot;</span>, <span class="st">&quot;$20-30k&quot;</span>, <span class="st">&quot;$30-40k&quot;</span>, <span class="st">&quot;$40-50k&quot;</span>, <span class="st">&quot;$50-75k&quot;</span>, 
+religion$income &lt;-<span class="st"> </span><span class="kw">factor</span>(religion$income, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;&lt;$10k&quot;</span>, <span class="st">&quot;$10-20k&quot;</span>, <span class="st">&quot;$20-30k&quot;</span>, <span class="st">&quot;$30-40k&quot;</span>, <span class="st">&quot;$40-50k&quot;</span>, <span class="st">&quot;$50-75k&quot;</span>,
   <span class="st">&quot;$75-100k&quot;</span>, <span class="st">&quot;$100-150k&quot;</span>, <span class="st">&quot;&gt;150k&quot;</span>, <span class="st">&quot;Don't know/refused&quot;</span>))</code></pre></div>
 <h2 id="now-we-can-reduce-this-down-to-three-columns-for-three-variables">now we can reduce this down to three columns for three variables</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">religion &lt;-<span class="st"> </span><span class="kw">count</span>(religion, reltrad, income)
@@ -700,8 +707,7 @@ religion$income &lt;-<span class="st"> </span><span class="kw">factor</span>(rel
 <div id="acknowledgements" class="slide section level1">
 <h1>Acknowledgements</h1>
 <h2 id="materials-taken-from">Materials taken from:</h2>
-<p><a href="https://github.com/ckrogs/r_useful_dlab">Chris Krogslund</a></p>
-<p><a href="www.jstatsoft.org/v59/i10/paper">Hadley Wickham</a></p>
+<p><a href="https://github.com/ckrogs/r_useful_dlab">Chris Krogslund</a> <a href="http://www.jstatsoft.org/v59/i10/paper">Hadley Wickham</a></p>
 </div>
 
   <!-- dynamically load mathjax for compatibility with self-contained -->
