@@ -5,6 +5,42 @@ author: Dillon Niederhut
 
 This repository contains the instructor materials for the D-Lab's R intensive.
 
+## Topics:
+
+This workshop series covers:
+
+1. Interacting with R
+2. Datatypes
+3. Data structures
+4. Reading data
+5. Sanitizing data
+6. Missing data
+7. Reshaping data
+8. Summary statistics
+9. Plotting
+10. Linear models
+11. Non-parametric models
+12. Functions
+13. Loops
+14. Parallelization
+15. Packages
+
+## Libraries
+
+This workshop uses the following packages:
+
+1. Amelia
+2. devtools
+3. dplyr
+4. foreign
+5. ggplot2
+6. parallelMap
+7. RCurl
+8. reshape2
+9. roxygen2
+10. stringr
+11. XML
+
 ## Contents:
 
 1. data/ -- datafiles necessary for training
