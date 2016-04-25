@@ -22,7 +22,9 @@ The students won't need these materials today, but they will for the rest of the
 
 ## Introduction to the class
 
-> side note - these materials are meant to be guides for you. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+Tthese materials are meant to be guides for you, the instructor. Your students will retain more of this content if they type these commands themselves than if they read them off of the slidedeck. That being said, at any time, you can create a slide deck by changing `output:` to be `html_slides` instead of `pdf_document`.
+
+**If you are a student and you are looking at this PDF**, be sure not to copy the code examples directly from the PDF. The typesetter uses character encoding that might not match the local settings on your computer, and the examples won't work. If you have fallen behind or can't see the screen very well, and want to copy the code examples, do so from the `.R` files in this directory.
 
 It is a good idea to start off the class by asking folks why they want to learn R. Common responses include:
 
@@ -203,6 +205,8 @@ many people write clever software that makes R smarter/better/faster/stronger
 ```{r, eval=FALSE}
 install.packages("Amelia")
 ```
+
+> side note - by default, R tries to install packages to a write-protected directory on Windows machines. There are two ways around this: 1, say 'yes' to the option of installing the packages in a different location; or 2, use the `Tools / Install Packages` drop-down menu item in RStudio
 
 ## and include them in your environment with
 
