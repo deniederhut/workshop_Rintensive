@@ -404,15 +404,15 @@ str(my.data$numeric)
 (plus a wrapper around the base string functions)
 
 ```{r, eval=FALSE}
-install.packages('reshape2')
+install.packages('tidyr')
 install.packages('stringr')
-install.packages('plyr')
+install.packages('dplyr')
 ```
 
 ```{r}
-library(reshape2)
+library(tidyr)
 library(stringr)
-library(plyr)
+library(dplyr)
 ```
 
 ## reshaping
@@ -430,17 +430,18 @@ this table is not tidy - why not?
 the table is about measurements, but each measurement does not have its own row, and each type of measurement value is represented by more than one column
 
 ```{r}
-normal <- melt(data = abnormal, id.vars = 'name')
+normal <- gather(abnormal, "time", "score", time1, time2)
 normal
 ```
 
-we can `melt` this dataframe down into a long format, which makes each row a unique observation, and then clean up the dataframe a bit
+we can gather the two columns with time data into a column representing just time, and another representing just scores
+
+now that each row is a unique observation, we can clean up the dataframe a bit
 
 ```{r}
 normal$id <- seq(1:nrow(normal))
-names(normal) <- c('name','time','value','id')
 normal$time <- str_replace(normal$time,'time','')
-
+normal$time <- as.numeric(normal$time)
 ```
 
 now that we are in a tidy format, see how easy it is to subset
@@ -455,7 +456,7 @@ and test
 > side note - don't worry about how this works yet - we'll talk about it tomorrow
 
 ```{r}
-t.test(value ~ time, data=normal)
+t.test(score ~ time, data=normal)
 ```
 
 it's easy to combine tidy tables to compare different levels of information simultaneously
@@ -539,24 +540,11 @@ library(dplyr)
 
 base R syntax for sorting is a bit of a pain in that you have to create a sorting vector based on the values in a column, then subset the same dataframe and apply the sorting vector to the rows slice
 
-to demonstrate this, let's start by making a toy data frame
+to demonstrate this, let's have another look at our 'normal' data frame
 
 ```{r}
-toy <- data.frame(
-  id = c(1,1,1,2,2,2,3,3,3),
-  score.1 = c(90,94,40,80,80,80,76,80,82)
-)
-arrange(toy, score.1)
-```
-
-## select rows by pattern with `select`
-
-it's common for variables that measure similar things to have similar names, but selecting columns this was in base R requires running `grepl` on column names, then subsetting the dataframe and applying the logical vector to the column field
-
-```{r}
-toy$score.2 <- 100
-select(toy, score.1, score.2)
-select(toy, contains('score'))
+normal
+arrange(normal, score)
 ```
 
 ## apply summary fucntions with `summarise`
@@ -568,8 +556,10 @@ dplyr includes most of the base R summary statistics, along with:
 * `first()`
 * `last()`
 
+if we want to get the mean and sd for the scores, we can do
+
 ```{r}
-summarise(toy, n(), n_distinct(score.1), last(score.1))
+summarise(normal, mean(score), sd(score))
 ```
 
 ## dplyr allows you to apply functions to groups
@@ -578,19 +568,25 @@ so far, these have taken base R functions and made them faster (with C++ calls b
 
 dplyr's real utility is in its grouped dataframes, which apply dplyr functions groupwise
 
+let's say that we want to know the rank at each time -- we can `groupby` time and then do some variable transformation
+
 ```{r}
-group_by(toy, id)
-summarise(group_by(toy, id), n(), n_distinct(score.1))
+group_by(normal, time)
+summarize(group_by(normal, time), mean(score))
+mutate(group_by(normal, time), diff=score-mean(score))
+ungroup(mutate(group_by(normal, time), diff=score-mean(score)))
 ```
 
 you can add as many functions as you want inbetween, but wrapping function call around function call can be hard to read (and write!)
 
 ## you can pipe functions with the `%>%` operator
 
-this will look very familiar if you are used to working in bash
+pipes take the output of one function and give it as an input to the next function, without deep nesting of functions nor saving all of the intermediate steps
+
+this makes code a lot easier to read, and to understand
 
 ```{r}
-toy %>% group_by(id) %>% summarise(n(), n_distinct(score.1))
+normal %>% group_by(time) %>% mutate(diff=score-mean(score)) %>% ungroup() -> super
 ```
 
 # Practice
