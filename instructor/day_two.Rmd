@@ -185,7 +185,7 @@ names(dirty) <- c("time", "height", "dept", "enroll", "birth.order")
 (to help differentiate it from your hand-coder forgetting to do something)
 
 ```{r}
-dirty$enrollment
+dirty$enroll
 ```
 
 ## you should replace all of these values in your dataframe with R's missingness signifier, `NA`
@@ -197,17 +197,6 @@ table(dirty$enroll, useNA = "ifany")
 ```
 
 > side note - read.table() has an option to specify field values as `NA` as soon as you import the data, but this is a BAAAAD idea because R automatically encodes blank fields as missing too, and thus you lose the ability to distinguish between user-missing and experimenter-missing
-
-
-## that timestamp variable is not in a format R likes
-
-base R doesn't handle time well, so we need to get rid of the time part of the timestamp
-
-```{r}
-dirty$time
-dirty$time <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$time)
-dirty$time
-```
 
 ## the height variable is in four different units
 
