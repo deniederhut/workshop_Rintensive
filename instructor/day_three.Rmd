@@ -47,23 +47,28 @@ summary(dat)
 table(dat$department)
 ```
 
-think back to day one - how would we make weekdays out of the date variable?
+## the `psych` package provides trimmed means, skew, kurtosis, and missingness
 
 ```{r}
-dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
-                   levels = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
-                   )
-summary(dat$wday)
+library(psych)
+describe(dat)
 ```
 
-> side note - `weekdays` is locale aware, so students who have their laptop language set to something other than english will get their weekday names in the other language
-
-## reshape provides a few more ways to aggregate things
+## you can use dplyr::groupby to generate summaries
 
 ```{r}
-library(reshape2)
-dcast(dat[dat$gender == 'Female/Woman' | dat$gender == 'Male/Man',], department ~ gender)
-dcast(melt(dat, measure.vars = c('course.delivered')), wday ~ 'Delivered', fun.aggregate = mean)
+library(dplyr)
+dat %>% group_by(gender) %>% summarize(n())
+```
+
+## and you can combine dplyr with tidyr::spread to generate crosstabs
+
+> side note - we are filtering out missing values of gender, because `tidyr` doesn't allow `NA` as a column name
+
+```{r}
+library(tidyr)
+dat %>% filter(!is.na(gender)) %>% group_by(gender, department) %>% 
+  summarize(n=n()) %>% spread(gender, n)
 ```
 
 # Plotting
@@ -88,6 +93,19 @@ dcast(melt(dat, measure.vars = c('course.delivered')), wday ~ 'Delivered', fun.a
 ```{r}
 install.packages('ggplot2')
 library(ggplot2)
+```
+
+## getting weekdays
+
+let's imagine that we are interested in looking at differences in feedback based on the day of the week -- how would we do this in R?
+
+> side note - `weekdays` is locale aware, so students who have their laptop language set to something other than english will get their weekday names in the other language
+
+```{r}
+dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
+                   levels = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
+                   )
+summary(dat$wday)
 ```
 
 ## use qplot for initial poking around
