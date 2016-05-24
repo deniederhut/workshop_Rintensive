@@ -61,17 +61,17 @@ This workshop series covers:
 
 This workshop uses the following packages:
 
-1. Amelia
-2. devtools
-3. dplyr
-4. foreign
-5. ggplot2
-6. parallelMap
-7. RCurl
-8. reshape2
-9. roxygen2
-10. stringr
-11. XML
+* Amelia
+* devtools
+* dplyr
+* foreign
+* ggplot2
+* parallelMap
+* RCurl
+* roxygen2
+* stringr
+* tidyr
+* XML
 
 ---
 _D-Lab == Data Intensive Social Science, For All!_
