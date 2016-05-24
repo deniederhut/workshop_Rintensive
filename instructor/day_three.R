@@ -10,19 +10,27 @@ summary(dat)
 table(dat$department)
 
 ## ------------------------------------------------------------------------
-dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
-                   levels = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
-                   )
-summary(dat$wday)
+library(psych)
+describe(dat)
 
 ## ------------------------------------------------------------------------
-library(reshape2)
-dcast(dat[dat$gender == 'Female/Woman' | dat$gender == 'Male/Man',], department ~ gender)
-dcast(melt(dat, measure.vars = c('course.delivered')), wday ~ 'Delivered', fun.aggregate = mean)
+library(dplyr)
+dat %>% group_by(gender) %>% summarize(n())
+
+## ------------------------------------------------------------------------
+library(tidyr)
+dat %>% filter(!is.na(gender)) %>% group_by(gender, department) %>% 
+  summarize(n=n()) %>% spread(gender, n)
 
 ## ------------------------------------------------------------------------
 install.packages('ggplot2')
 library(ggplot2)
+
+## ------------------------------------------------------------------------
+dat$wday <- factor(weekdays(dat$timestamp, abbreviate = TRUE), 
+                   levels = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun')
+                   )
+summary(dat$wday)
 
 ## ------------------------------------------------------------------------
 qplot(instructor.communicated, data = dat)

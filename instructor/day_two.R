@@ -72,17 +72,12 @@ names(dirty)
 names(dirty) <- c("time", "height", "dept", "enroll", "birth.order")
 
 ## ------------------------------------------------------------------------
-dirty$enrollment
+dirty$enroll
 
 ## ------------------------------------------------------------------------
 table(dirty$enroll)
 dirty$enroll[dirty$enroll=="999"] <- NA
 table(dirty$enroll, useNA = "ifany")
-
-## ------------------------------------------------------------------------
-dirty$time
-dirty$time <- sub(' [0-9]+:[0-9]+:[0-9]+','',dirty$time)
-dirty$time
 
 ## ------------------------------------------------------------------------
 class(dirty$height)
@@ -170,14 +165,14 @@ str(my.data[!(my.data$character %in% good.things), ])
 str(my.data$numeric)
 
 ## ---- eval=FALSE---------------------------------------------------------
-## install.packages('reshape2')
+## install.packages('tidyr')
 ## install.packages('stringr')
-## install.packages('plyr')
+## install.packages('dplyr')
 
 ## ------------------------------------------------------------------------
-library(reshape2)
+library(tidyr)
 library(stringr)
-library(plyr)
+library(dplyr)
 
 ## ------------------------------------------------------------------------
 abnormal <- data.frame(name = c('Alice','Bob','Eve'),
@@ -185,21 +180,20 @@ abnormal <- data.frame(name = c('Alice','Bob','Eve'),
                        time2 = c(100,95,100))
 
 ## ------------------------------------------------------------------------
-normal <- melt(data = abnormal, id.vars = 'name')
+normal <- gather(abnormal, "time", "score", time1, time2)
 normal
 
 ## ------------------------------------------------------------------------
 normal$id <- seq(1:nrow(normal))
-names(normal) <- c('name','time','value','id')
 normal$time <- str_replace(normal$time,'time','')
-
+normal$time <- as.numeric(normal$time)
 
 ## ------------------------------------------------------------------------
 normal[normal$time == 1,]
 normal[normal$name == 'Alice',]
 
 ## ------------------------------------------------------------------------
-t.test(value ~ time, data=normal)
+t.test(score ~ time, data=normal)
 
 ## ------------------------------------------------------------------------
 data.1 <- read.csv('data/merge_practice_1.csv')
@@ -227,26 +221,20 @@ lookup[lookup$location == 'Reno', ]
 library(dplyr)
 
 ## ------------------------------------------------------------------------
-toy <- data.frame(
-  id = c(1,1,1,2,2,2,3,3,3),
-  score.1 = c(90,94,40,80,80,80,76,80,82)
-)
-arrange(toy, score.1)
+normal
+arrange(normal, score)
 
 ## ------------------------------------------------------------------------
-toy$score.2 <- 100
-select(toy, score.1, score.2)
-select(toy, contains('score'))
+summarise(normal, mean(score), sd(score))
 
 ## ------------------------------------------------------------------------
-summarise(toy, n(), n_distinct(score.1), last(score.1))
+group_by(normal, time)
+summarize(group_by(normal, time), mean(score))
+mutate(group_by(normal, time), diff=score-mean(score))
+ungroup(mutate(group_by(normal, time), diff=score-mean(score)))
 
 ## ------------------------------------------------------------------------
-group_by(toy, id)
-summarise(group_by(toy, id), n(), n_distinct(score.1))
-
-## ------------------------------------------------------------------------
-toy %>% group_by(id) %>% summarise(n(), n_distinct(score.1))
+normal %>% group_by(time) %>% mutate(diff=score-mean(score)) %>% ungroup() -> super
 
 ## ------------------------------------------------------------------------
 library(foreign)
