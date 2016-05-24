@@ -22,7 +22,7 @@ The workshop duration is 3hrs per class.
 
 **knowledge requirements** : [Programming Fun!damentals](https://github.com/dlab-berkeley/programming-fundamentals), or equivalent prior knowledge
 
-**tech requirements** : Laptop required; please install R version 3.2 or greater in advance; the RStudio IDE is recommended but not required
+**tech requirements** : Laptop required; please install R version 3.2 or greater in advance (University laptops will need to have R installed by an administrator); the RStudio IDE is recommended but not required
 
 ## Part 2
 
@@ -32,7 +32,7 @@ The workshop duration is 3hrs per class.
 
 **knowledge requirements** : R-for-Data-Science Part 1 or equivalent prior knowledge
 
-**tech requirements** :  Laptop required; please install R version 3.2 or greater in advance; the RStudio IDE is recommended but not required
+**tech requirements** :  Laptop required; please install R version 3.2 or greater in advance (University laptops will need to have R installed by an administrator); the RStudio IDE is recommended but not required
 
 ## Part 3
 
@@ -42,7 +42,7 @@ The workshop duration is 3hrs per class.
 
 **knowledge requirements** : R-for-Data-Science Part 2 or equivalent prior knowledge
 
-**tech requirements** : Laptop required; please install R version 3.2 or greater in advance; the RStudio IDE is recommended but not required
+**tech requirements** : Laptop required; please install R version 3.2 or greater in advance (University laptops will need to have R installed by an administrator); the RStudio IDE is recommended but not required
 
 ## Part 4
 
@@ -52,4 +52,4 @@ The workshop duration is 3hrs per class.
 
 **knowledge requirements** : R-for-Data-Science Part 2 or equivalent prior knowledge
 
-**tech requirements** : Laptop required; please install R version 3.2 or greater in advance; the RStudio IDE is recommended but not required
+**tech requirements** : Laptop required; please install R version 3.2 or greater in advance (University laptops will need to have R installed by an administrator); the RStudio IDE is recommended but not required
